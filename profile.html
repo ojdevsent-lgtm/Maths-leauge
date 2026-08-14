@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Profile | ML Trivia</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css">
+
+</head>
+
+<body>
+
+<main class="profile-page">
+
+    <header class="profile-header">
+
+        <button
+            type="button"
+            id="backButton"
+            class="back-button"
+        >
+            <i class="ri-arrow-left-line"></i>
+        </button>
+
+        <h1>Profile</h1>
+
+        <div></div>
+
+    </header>
+
+
+    <section
+        class="profile-content"
+        id="profileContent"
+    >
+
+        <!-- PROFILE IDENTITY -->
+
+        <div class="profile-identity">
+
+            <div class="profile-avatar">
+                <i class="ri-user-3-line"></i>
+            </div>
+
+            <h2 id="fullName">
+                Student
+            </h2>
+
+            <p id="registrationNumber">
+                MLTP00001
+            </p>
+
+        </div>
+
+
+        <!-- LEAGUE CARD -->
+
+        <div class="league-card">
+
+            <div>
+
+                <span>
+                    Maths League Member
+                </span>
+
+                <strong id="memberStatus">
+                    Active
+                </strong>
+
+            </div>
+
+            <i class="ri-medal-line"></i>
+
+        </div>
+
+
+        <!-- INFORMATION -->
+
+        <section class="profile-section">
+
+            <p class="eyebrow">
+                PERSONAL INFORMATION
+            </p>
+
+            <div class="info-list">
+
+                <div class="info-row">
+
+                    <div class="info-icon">
+                        <i class="ri-mail-line"></i>
+                    </div>
+
+                    <div>
+                        <span>Email</span>
+                        <strong id="email">—</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-icon">
+                        <i class="ri-phone-line"></i>
+                    </div>
+
+                    <div>
+                        <span>Phone</span>
+                        <strong id="phone">—</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-icon">
+                        <i class="ri-school-line"></i>
+                    </div>
+
+                    <div>
+                        <span>School</span>
+                        <strong id="school">—</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <div class="info-icon">
+                        <i class="ri-map-pin-line"></i>
+                    </div>
+
+                    <div>
+                        <span>State</span>
+                        <strong id="state">—</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ACCOUNT -->
+
+        <section class="profile-section">
+
+            <p class="eyebrow">
+                ACCOUNT
+            </p>
+
+            <div class="account-actions">
+
+                <button
+                    type="button"
+                    id="logoutButton"
+                    class="logout-button"
+                >
+
+                    <i class="ri-logout-box-r-line"></i>
+
+                    <span>
+                        Log Out
+                    </span>
+
+                </button>
+
+            </div>
+
+        </section>
+
+    </section>
+
+
+    <!-- LOADING -->
+
+    <div
+        class="profile-loading"
+        id="profileLoading"
+    >
+
+        <i class="ri-loader-4-line"></i>
+
+        Loading profile...
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        class="profile-error"
+        id="profileError"
+    ></div>
+
+
+    <!-- BOTTOM NAVIGATION -->
+
+    <nav class="bottom-nav">
+
+        <button
+            type="button"
+            class="nav-item"
+            data-page="home"
+        >
+            <i class="ri-home-5-line"></i>
+            <span>Home</span>
+        </button>
+
+
+        <a
+    href="quiz-home.html"
+    class="nav-item"
+>
+    <i class="ri-brain-line"></i>
+    <span>Quiz</span>
+</a>
+
+
+        <button
+            type="button"
+            class="nav-item"
+            data-page="progress"
+        >
+            <i class="ri-bar-chart-box-line"></i>
+            <span>Progress</span>
+        </button>
+
+
+        <button
+            type="button"
+            class="nav-item active"
+            data-page="profile"
+        >
+            <i class="ri-user-3-line"></i>
+            <span>Profile</span>
+        </button>
+
+    </nav>
+
+</main>
+
+
+<script
+    type="module"
+    src="js/profile.js"
+></script>
+
+</body>
+
+</html>

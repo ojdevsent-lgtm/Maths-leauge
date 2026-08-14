@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Daily Quiz | ML Trivia</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/take-quiz.css">
+
+</head>
+
+<body>
+
+<main class="take-quiz-page">
+
+    <!-- HEADER -->
+
+    <header class="take-quiz-header">
+
+        <a href="quiz.html" id="exitQuiz">
+            <i class="ri-arrow-left-line"></i>
+        </a>
+
+        <div class="quiz-title">
+            <span>ML TRIVIA</span>
+            <strong>Daily Quiz</strong>
+        </div>
+
+        <div
+            class="question-counter"
+            id="questionCounter"
+        >
+            1 / 10
+        </div>
+
+    </header>
+
+
+    <!-- PROGRESS -->
+
+    <div class="quiz-progress">
+
+        <div
+            class="quiz-progress-bar"
+            id="quizProgress"
+        ></div>
+
+    </div>
+
+
+    <!-- QUESTION -->
+
+    <section class="question-section">
+
+        <p class="question-label">
+            QUESTION <span id="questionNumber">01</span>
+        </p>
+
+        <h1 id="questionText">
+            Loading question...
+        </h1>
+
+
+        <div
+            class="answers"
+            id="answers"
+        ></div>
+
+    </section>
+
+
+    <!-- CONTROLS -->
+
+    <div class="quiz-controls">
+
+        <button
+            type="button"
+            id="nextButton"
+            disabled
+        >
+            Next Question
+            <i class="ri-arrow-right-line"></i>
+        </button>
+
+    </div>
+
+
+    <!-- MESSAGE -->
+
+    <div
+        id="quizMessage"
+        class="quiz-message"
+    ></div>
+
+</main>
+
+
+<script
+    type="module"
+    src="js/take-quiz.js"
+></script>
+
+</body>
+
+</html>

@@ -1,0 +1,338 @@
+.profile-page {
+    min-height: 100vh;
+
+    padding: 22px 18px 105px;
+
+    background: var(--background);
+}
+
+
+/* HEADER */
+
+.profile-header {
+    max-width: 620px;
+
+    margin: 0 auto 30px;
+
+    display: grid;
+    grid-template-columns: 42px 1fr 42px;
+
+    align-items: center;
+
+    text-align: center;
+}
+
+.profile-header h1 {
+    margin: 0;
+
+    font-family: "Space Grotesk", sans-serif;
+
+    font-size: 19px;
+}
+
+.back-button {
+    width: 40px;
+    height: 40px;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    cursor: pointer;
+
+    font-size: 17px;
+}
+
+
+/* CONTENT */
+
+.profile-content {
+    display: none;
+
+    max-width: 620px;
+
+    margin: 0 auto;
+}
+
+.profile-content.active {
+    display: block;
+}
+
+
+/* IDENTITY */
+
+.profile-identity {
+    text-align: center;
+
+    margin-bottom: 25px;
+}
+
+.profile-avatar {
+    width: 78px;
+    height: 78px;
+
+    display: grid;
+    place-items: center;
+
+    margin: 0 auto 14px;
+
+    background: var(--primary);
+
+    color: white;
+
+    font-size: 30px;
+}
+
+.profile-identity h2 {
+    margin: 0;
+
+    font-family: "Space Grotesk", sans-serif;
+
+    font-size: 22px;
+}
+
+.profile-identity p {
+    margin: 5px 0 0;
+
+    color: var(--primary);
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+
+/* LEAGUE */
+
+.league-card {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 17px;
+
+    margin-bottom: 30px;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+}
+
+.league-card span,
+.league-card strong {
+    display: block;
+}
+
+.league-card span {
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+.league-card strong {
+    margin-top: 4px;
+
+    font-size: 13px;
+}
+
+.league-card > i {
+    font-size: 25px;
+
+    color: var(--primary);
+}
+
+
+/* SECTIONS */
+
+.profile-section {
+    margin-bottom: 30px;
+}
+
+.profile-section > .eyebrow {
+    margin-bottom: 12px;
+}
+
+
+/* INFO */
+
+.info-list {
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+}
+
+.info-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 15px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.info-row:last-child {
+    border-bottom: 0;
+}
+
+.info-icon {
+    width: 34px;
+    height: 34px;
+
+    display: grid;
+    place-items: center;
+
+    flex-shrink: 0;
+
+    background: rgba(21, 94, 239, .07);
+
+    color: var(--primary);
+
+    font-size: 15px;
+}
+
+.info-row span,
+.info-row strong {
+    display: block;
+}
+
+.info-row span {
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+.info-row strong {
+    margin-top: 3px;
+
+    font-size: 12px;
+
+    word-break: break-word;
+}
+
+
+/* LOGOUT */
+
+.account-actions {
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+}
+
+.logout-button {
+    width: 100%;
+
+    min-height: 52px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 0 15px;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #b42318;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    text-align: left;
+}
+
+
+/* LOADING */
+
+.profile-loading {
+    max-width: 620px;
+
+    margin: 60px auto;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+.profile-loading i {
+    animation: profileSpin 1s linear infinite;
+}
+
+@keyframes profileSpin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* ERROR */
+
+.profile-error {
+    display: none;
+
+    max-width: 620px;
+
+    margin: 30px auto;
+
+    padding: 13px;
+
+    background: #fef3f2;
+
+    border: 1px solid #fecdca;
+
+    color: #b42318;
+
+    font-size: 11px;
+}
+
+
+/* NAV */
+
+
+@media (min-width: 700px) {
+
+    .profile-page {
+        padding-top: 45px;
+    }
+
+    .bottom-nav {
+        left: 50%;
+        right: auto;
+
+        width: min(520px, 100%);
+
+        transform: translateX(-50%);
+
+        border: 1px solid var(--border);
+    }
+
+}

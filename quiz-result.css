@@ -1,0 +1,217 @@
+.result-page {
+    min-height: 100vh;
+
+    padding: 40px 18px 105px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: var(--background);
+}
+
+
+.result-container {
+    width: 100%;
+
+    max-width: 520px;
+
+    text-align: center;
+}
+
+
+/* ICON */
+
+.result-icon {
+    width: 64px;
+    height: 64px;
+
+    margin: 0 auto 20px;
+
+    display: grid;
+
+    place-items: center;
+
+    background: var(--primary);
+
+    color: white;
+
+    font-size: 27px;
+}
+
+
+/* HEADING */
+
+.result-container h1 {
+    margin: 7px 0 8px;
+
+    font-family: "Space Grotesk", sans-serif;
+
+    font-size: 34px;
+
+    letter-spacing: -1px;
+}
+
+
+.result-description {
+    margin: 0 auto;
+
+    max-width: 360px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* SCORE */
+
+.score-box {
+    margin: 30px 0 14px;
+
+    padding: 25px 15px;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+}
+
+
+.score-box span,
+.score-box small {
+    display: block;
+
+    color: var(--muted);
+}
+
+
+.score-box span {
+    font-size: 10px;
+}
+
+
+.score-box strong {
+    display: block;
+
+    margin: 5px 0;
+
+    font-family: "Space Grotesk", sans-serif;
+
+    font-size: 45px;
+
+    letter-spacing: -2px;
+
+    color: var(--primary);
+}
+
+
+.score-box small {
+    font-size: 11px;
+}
+
+
+/* STATS */
+
+.result-stats {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+}
+
+
+.result-stats div {
+    padding: 16px 8px;
+
+    border-right: 1px solid var(--border);
+}
+
+
+.result-stats div:last-child {
+    border-right: 0;
+}
+
+
+.result-stats span,
+.result-stats strong {
+    display: block;
+}
+
+
+.result-stats span {
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+
+.result-stats strong {
+    margin-top: 4px;
+
+    font-size: 16px;
+}
+
+
+/* ACTIONS */
+
+.result-actions {
+    margin-top: 22px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 9px;
+}
+
+
+.result-primary,
+.result-secondary {
+    min-height: 50px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    text-decoration: none;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+.result-primary {
+    background: var(--primary);
+
+    color: white;
+}
+
+
+.result-secondary {
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+
+    color: var(--text);
+}
+
+
+@media (min-width: 700px) {
+
+    .result-container h1 {
+        font-size: 40px;
+    }
+
+}

@@ -1,0 +1,376 @@
+.progress-page {
+    min-height: 100vh;
+
+    padding: 25px 18px 105px;
+
+    background: var(--background);
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.progress-header {
+    max-width: 720px;
+
+    margin: 0 auto 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.progress-header h1 {
+    margin: 5px 0 0;
+
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 29px;
+    letter-spacing: -.7px;
+}
+
+.header-profile {
+    width: 42px;
+    height: 42px;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+    color: var(--text);
+
+    cursor: pointer;
+
+    font-size: 18px;
+}
+
+
+/* =========================================
+   LOADING
+========================================= */
+
+.progress-loading {
+    max-width: 720px;
+
+    margin: 60px auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+.progress-loading i {
+    font-size: 18px;
+
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.progress-content {
+    display: none;
+
+    max-width: 720px;
+
+    margin: 0 auto;
+}
+
+.progress-content.active {
+    display: block;
+}
+
+
+/* =========================================
+   STUDENT CARD
+========================================= */
+
+.student-card {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding: 16px;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+
+    margin-bottom: 14px;
+}
+
+.student-avatar {
+    width: 45px;
+    height: 45px;
+
+    display: grid;
+    place-items: center;
+
+    flex-shrink: 0;
+
+    background: var(--primary);
+    color: white;
+
+    font-size: 19px;
+}
+
+.student-card span,
+.student-card strong,
+.student-card small {
+    display: block;
+}
+
+.student-card span {
+    color: var(--muted);
+    font-size: 9px;
+}
+
+.student-card strong {
+    margin-top: 2px;
+
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 14px;
+}
+
+.student-card small {
+    margin-top: 3px;
+
+    color: var(--primary);
+
+    font-size: 9px;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   STATISTICS
+========================================= */
+
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 10px;
+
+    margin-bottom: 35px;
+}
+
+.stat-card {
+    padding: 16px;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+}
+
+.stat-icon {
+    width: 30px;
+    height: 30px;
+
+    display: grid;
+    place-items: center;
+
+    margin-bottom: 15px;
+
+    background: rgba(21, 94, 239, .07);
+
+    color: var(--primary);
+
+    font-size: 15px;
+}
+
+.stat-card span {
+    display: block;
+
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+.stat-card strong {
+    display: block;
+
+    margin-top: 4px;
+
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 22px;
+}
+
+
+/* =========================================
+   SECTION
+========================================= */
+
+.performance-section {
+    margin-top: 10px;
+}
+
+.section-heading {
+    margin-bottom: 15px;
+}
+
+.section-heading h2 {
+    margin: 5px 0 0;
+
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 20px;
+}
+
+
+/* =========================================
+   QUIZ HISTORY
+========================================= */
+
+.quiz-history {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.history-empty {
+    padding: 30px 15px;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+
+    color: var(--muted);
+
+    text-align: center;
+
+    font-size: 11px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 15px;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+}
+
+.history-left {
+    min-width: 0;
+}
+
+.history-title {
+    display: block;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.history-date {
+    display: block;
+
+    margin-top: 4px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+.history-right {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.history-score {
+    display: block;
+
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 15px;
+}
+
+.history-points {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--primary);
+
+    font-size: 9px;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+.progress-error {
+    display: none;
+
+    max-width: 720px;
+
+    margin: 30px auto;
+
+    padding: 13px;
+
+    background: #fef3f2;
+
+    border: 1px solid #fecdca;
+
+    color: #b42318;
+
+    font-size: 11px;
+}
+
+
+/* =========================================
+   BOTTOM NAVIGATION
+========================================= */
+
+
+/* =========================================
+   DESKTOP
+========================================= */
+
+@media (min-width: 700px) {
+
+    .progress-page {
+        padding: 45px 25px 110px;
+    }
+
+    .progress-stats {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .bottom-nav {
+        left: 50%;
+        right: auto;
+
+        width: min(520px, 100%);
+
+        transform: translateX(-50%);
+
+        border: 1px solid var(--border);
+    }
+
+}

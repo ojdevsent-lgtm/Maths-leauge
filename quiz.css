@@ -1,0 +1,322 @@
+.quiz-page {
+    min-height: 100vh;
+
+    padding: 22px 18px 105px;
+
+    background: var(--background);
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.quiz-header {
+    max-width: 620px;
+
+    margin: 0 auto 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+}
+
+.back-button {
+    width: 40px;
+    height: 40px;
+
+    display: grid;
+    place-items: center;
+
+    flex-shrink: 0;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    text-decoration: none;
+
+    font-size: 17px;
+}
+
+.quiz-header h1 {
+    margin: 0;
+
+    font-family: "Space Grotesk", sans-serif;
+
+    font-size: 21px;
+}
+
+.quiz-header p {
+    margin: 3px 0 0;
+
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+
+/* =========================================
+   INTRO
+========================================= */
+
+.quiz-intro {
+    max-width: 620px;
+
+    margin: 0 auto 28px;
+}
+
+.quiz-intro h2 {
+    margin: 7px 0 9px;
+
+    font-family: "Space Grotesk", sans-serif;
+
+    font-size: 30px;
+
+    line-height: 1.1;
+
+    letter-spacing: -.7px;
+}
+
+.quiz-intro > p:last-child {
+    max-width: 480px;
+
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================
+   QUIZ OPTIONS
+========================================= */
+
+.quiz-options {
+    max-width: 620px;
+
+    margin: 0 auto;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+
+.quiz-card {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: 46px 1fr 20px;
+
+    align-items: start;
+
+    gap: 13px;
+
+    padding: 17px;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    font-family: inherit;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        border-color .2s ease,
+        transform .15s ease;
+}
+
+.quiz-card:hover {
+    border-color: var(--primary);
+}
+
+.quiz-card:active {
+    transform: scale(.995);
+}
+
+
+/* ICON */
+
+.quiz-card-icon {
+    width: 46px;
+    height: 46px;
+
+    display: grid;
+    place-items: center;
+
+    background: rgba(21, 94, 239, .07);
+
+    color: var(--primary);
+
+    font-size: 20px;
+}
+
+
+/* CONTENT */
+
+.quiz-card-content {
+    min-width: 0;
+}
+
+.quiz-card-top {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+    margin-bottom: 5px;
+}
+
+.quiz-label {
+    color: var(--muted);
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: .8px;
+}
+
+.quiz-status {
+    padding: 4px 7px;
+
+    background: #f2f4f7;
+
+    color: var(--muted);
+
+    font-size: 8px;
+
+    font-weight: 600;
+}
+
+.quiz-status.available {
+    background: rgba(21, 94, 239, .08);
+
+    color: var(--primary);
+}
+
+
+.quiz-card h3 {
+    margin: 0 0 5px;
+
+    font-family: "Space Grotesk", sans-serif;
+
+    font-size: 16px;
+}
+
+.quiz-card p {
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+
+/* META */
+
+.quiz-meta {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 12px;
+}
+
+.quiz-meta span {
+    display: flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+.quiz-meta i {
+    color: var(--primary);
+
+    font-size: 12px;
+}
+
+
+/* ARROW */
+
+.quiz-arrow {
+    margin-top: 15px;
+
+    color: var(--muted);
+
+    font-size: 16px;
+}
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+.quiz-message {
+    display: none;
+
+    max-width: 620px;
+
+    margin: 18px auto 0;
+
+    padding: 13px;
+
+    border: 1px solid #fecdca;
+
+    background: #fef3f2;
+
+    color: #b42318;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+.quiz-message.show {
+    display: block;
+}
+
+
+/* =========================================
+   DESKTOP
+========================================= */
+
+@media (min-width: 700px) {
+
+    .quiz-page {
+        padding-top: 45px;
+    }
+
+    .quiz-intro h2 {
+        font-size: 36px;
+    }
+
+}

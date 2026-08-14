@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Quiz | ML Trivia</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/quiz.css">
+
+</head>
+
+<body>
+
+<main class="quiz-page">
+
+    <!-- HEADER -->
+
+    <header class="quiz-header">
+
+        <a
+            href="dashboard.html"
+            class="back-button"
+        >
+            <i class="ri-arrow-left-line"></i>
+        </a>
+
+        <div>
+
+            <h1>Quiz</h1>
+
+            <p>
+                Test your mathematical skills
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- INTRO -->
+
+    <section class="quiz-intro">
+
+        <p class="eyebrow">
+            MATHS LEAGUE
+        </p>
+
+        <h2>
+            Choose your challenge.
+        </h2>
+
+        <p>
+            Take part in Maths League quizzes,
+            challenges and competitions.
+        </p>
+
+    </section>
+
+
+    <!-- QUIZ OPTIONS -->
+
+    <section class="quiz-options">
+
+
+        <!-- DAILY QUIZ -->
+
+        <button
+            type="button"
+            class="quiz-card"
+            id="dailyQuiz"
+        >
+
+            <div class="quiz-card-icon">
+                <i class="ri-calendar-check-line"></i>
+            </div>
+
+            <div class="quiz-card-content">
+
+                <div class="quiz-card-top">
+
+                    <span class="quiz-label">
+                        DAILY
+                    </span>
+
+                    <span
+                        class="quiz-status available"
+                        id="dailyStatus"
+                    >
+                        Available
+                    </span>
+
+                </div>
+
+                <h3>
+                    Daily Quiz
+                </h3>
+
+                <p>
+                    Test your knowledge with today's
+                    Maths League questions.
+                </p>
+
+                <div class="quiz-meta">
+
+                    <span>
+                        <i class="ri-question-line"></i>
+                        10 Questions
+                    </span>
+
+                    <span>
+                        <i class="ri-star-line"></i>
+                        100 Points
+                    </span>
+
+                </div>
+
+            </div>
+
+            <i class="ri-arrow-right-line quiz-arrow"></i>
+
+        </button>
+
+
+        <!-- WEEKLY -->
+
+        <button
+            type="button"
+            class="quiz-card"
+            id="weeklyQuiz"
+        >
+
+            <div class="quiz-card-icon">
+                <i class="ri-calendar-line"></i>
+            </div>
+
+            <div class="quiz-card-content">
+
+                <div class="quiz-card-top">
+
+                    <span class="quiz-label">
+                        WEEKLY
+                    </span>
+
+                    <span class="quiz-status">
+                        Coming Soon
+                    </span>
+
+                </div>
+
+                <h3>
+                    Weekly Challenge
+                </h3>
+
+                <p>
+                    A more challenging test covering
+                    multiple mathematical topics.
+                </p>
+
+                <div class="quiz-meta">
+
+                    <span>
+                        <i class="ri-question-line"></i>
+                        20 Questions
+                    </span>
+
+                    <span>
+                        <i class="ri-star-line"></i>
+                        200 Points
+                    </span>
+
+                </div>
+
+            </div>
+
+            <i class="ri-lock-line quiz-arrow"></i>
+
+        </button>
+
+
+        <!-- COMPETITIONS -->
+
+        <button
+            type="button"
+            class="quiz-card"
+            id="competitionQuiz"
+        >
+
+            <div class="quiz-card-icon">
+                <i class="ri-trophy-line"></i>
+            </div>
+
+            <div class="quiz-card-content">
+
+                <div class="quiz-card-top">
+
+                    <span class="quiz-label">
+                        EVENTS
+                    </span>
+
+                    <span class="quiz-status">
+                        Coming Soon
+                    </span>
+
+                </div>
+
+                <h3>
+                    Competitions
+                </h3>
+
+                <p>
+                    Participate in official Maths League
+                    competitions and special events.
+                </p>
+
+                <div class="quiz-meta">
+
+                    <span>
+                        <i class="ri-medal-line"></i>
+                        Special Events
+                    </span>
+
+                </div>
+
+            </div>
+
+            <i class="ri-lock-line quiz-arrow"></i>
+
+        </button>
+
+    </section>
+
+
+    <!-- MESSAGE -->
+
+    <div
+        id="quizMessage"
+        class="quiz-message"
+    ></div>
+
+
+    <!-- BOTTOM NAV -->
+
+    <nav class="bottom-nav">
+
+        <a
+            href="dashboard.html"
+            class="nav-item"
+        >
+            <i class="ri-home-5-line"></i>
+            <span>Home</span>
+        </a>
+
+
+        <a
+            href="quiz.html"
+            class="nav-item active"
+        >
+            <i class="ri-brain-line"></i>
+            <span>Quiz</span>
+        </a>
+
+
+        <a
+            href="progress.html"
+            class="nav-item"
+        >
+            <i class="ri-bar-chart-box-line"></i>
+            <span>Progress</span>
+        </a>
+
+
+        <a
+            href="profile.html"
+            class="nav-item"
+        >
+            <i class="ri-user-3-line"></i>
+            <span>Profile</span>
+        </a>
+
+    </nav>
+
+</main>
+
+
+<script
+    type="module"
+    src="js/quiz-hub.js"
+></script>
+
+</body>
+
+</html>

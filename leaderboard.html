@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Leaderboard | ML Trivia</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/leaderboard.css">
+
+</head>
+
+<body>
+
+<main class="leaderboard-page">
+
+    <header class="leaderboard-header">
+
+        <a href="dashboard.html" class="back-button">
+            <i class="ri-arrow-left-line"></i>
+        </a>
+
+        <div>
+            <p>ML TRIVIA</p>
+            <h1>Leaderboard</h1>
+        </div>
+
+    </header>
+
+
+    <section class="leaderboard-intro">
+
+        <span class="eyebrow">
+            MATHS LEAGUE RANKINGS
+        </span>
+
+        <h2>
+            See who's leading.
+        </h2>
+
+        <p>
+            Rankings are based on points earned
+            from completed quizzes.
+        </p>
+
+    </section>
+
+
+    <!-- FILTER -->
+
+    <div class="leaderboard-tabs">
+
+        <button
+            class="leaderboard-tab active"
+            data-ranking="overall"
+        >
+            Overall
+        </button>
+
+        <button
+            class="leaderboard-tab"
+            data-ranking="monthly"
+        >
+            Monthly
+        </button>
+
+        <button
+            class="leaderboard-tab"
+            data-ranking="daily"
+        >
+            Daily
+        </button>
+
+    </div>
+
+
+    <!-- TOP THREE -->
+
+    <section
+        class="top-three"
+        id="topThree"
+    ></section>
+
+
+    <!-- RANKINGS -->
+
+    <section class="ranking-section">
+
+        <div class="ranking-heading">
+
+            <span>
+                RANKINGS
+            </span>
+
+            <span id="rankingStatus">
+                Overall
+            </span>
+
+        </div>
+
+
+        <div
+            class="ranking-list"
+            id="rankingList"
+        >
+
+            <div class="leaderboard-loading">
+                Loading rankings...
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <div
+        id="leaderboardMessage"
+        class="leaderboard-message"
+    ></div>
+
+</main>
+
+
+<script
+    type="module"
+    src="js/leaderboard.js"
+></script>
+
+</body>
+
+</html>

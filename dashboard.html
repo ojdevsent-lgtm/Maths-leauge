@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Dashboard | ML Trivia</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+
+</head>
+
+
+<body>
+
+<main class="dashboard-page">
+
+
+    <!-- ================================
+         TOP BAR
+    ================================= -->
+
+    <header class="dashboard-header">
+
+        <div class="dashboard-brand">
+
+            <div class="brand-mark">
+                ML
+            </div>
+
+            <div>
+
+                <h1>ML Trivia</h1>
+
+                <span>Maths League</span>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="notification-btn"
+            type="button"
+            aria-label="Notifications"
+        >
+
+            <i class="ri-notification-3-line"></i>
+
+        </button>
+
+    </header>
+
+
+
+    <!-- ================================
+         WELCOME
+    ================================= -->
+
+    <section class="welcome-section">
+
+        <p class="eyebrow">
+            STUDENT DASHBOARD
+        </p>
+
+        <h2>
+            Welcome back,
+            <span id="studentName">Student</span>.
+        </h2>
+
+        <div class="registration-number">
+
+            <span>
+                Registration Number
+            </span>
+
+            <strong id="registrationNumber">
+                Loading...
+            </strong>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================================
+         PROGRESS CARD
+    ================================= -->
+
+    <section class="progress-card">
+
+        <div class="progress-card-header">
+
+            <div>
+
+                <p>
+                    MATHS LEAGUE PROGRESS
+                </p>
+
+                <h3 id="totalPoints">
+                    0
+                </h3>
+
+                <span>
+                    Total Points
+                </span>
+
+            </div>
+
+
+            <div class="progress-icon">
+
+               <a href="leaderboard.html"> <i class="ri-trophy-line"></i</a>
+
+            </div>
+
+        </div>
+
+
+        <div class="stats-grid">
+
+            <div class="stat-item">
+
+                <strong id="quizzesCompleted">
+                    0
+                </strong>
+
+                <span>
+                    Quizzes
+                </span>
+
+            </div>
+
+
+            <div class="stat-item">
+
+                <strong id="averageScore">
+                    0%
+                </strong>
+
+                <span>
+                    Average
+                </span>
+
+            </div>
+
+
+            <div class="stat-item">
+
+                <strong id="leagueRank">
+                    —
+                </strong>
+
+                <span>
+                    Rank
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================================
+         QUICK ACTIONS
+    ================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-heading">
+
+            <h3>
+                Quick Actions
+            </h3>
+
+        </div>
+
+
+        <div class="quick-actions">
+
+            <button
+                class="action-card"
+                id="quizAction"
+                type="button"
+            >
+
+                <div class="action-icon">
+
+                    <i class="ri-brain-line"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        Daily Quiz
+                    </strong>
+
+                    <span>
+                        Test your mathematics
+                    </span>
+
+                </div>
+
+                <i class="ri-arrow-right-s-line"></i>
+
+            </button>
+
+
+            <button
+                class="action-card"
+                id="progressAction"
+                type="button"
+            >
+
+                <div class="action-icon">
+
+                    <i class="ri-bar-chart-box-line"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        My Progress
+                    </strong>
+
+                    <span>
+                        View your performance
+                    </span>
+
+                </div>
+
+                <i class="ri-arrow-right-s-line"></i>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================================
+         RECENT ACTIVITY
+    ================================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-heading">
+
+            <h3>
+                Recent Activity
+            </h3>
+
+            <button
+                type="button"
+                id="viewAllActivity"
+            >
+                View all
+            </button>
+
+        </div>
+
+
+        <div
+            class="activity-empty"
+            id="activityEmpty"
+        >
+
+            <div class="empty-icon">
+
+                <i class="ri-file-list-3-line"></i>
+
+            </div>
+
+            <h4>
+                No quizzes completed yet
+            </h4>
+
+            <p>
+                Complete your first quiz to start
+                building your Maths League record.
+            </p>
+
+            <button
+                type="button"
+                id="startFirstQuiz"
+            >
+                Start a Quiz
+                <i class="ri-arrow-right-line"></i>
+            </button>
+
+        </div>
+
+
+        <div
+            class="activity-list"
+            id="activityList"
+        >
+
+            <!-- Quiz activity will be loaded here -->
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================================
+         BOTTOM NAVIGATION
+    ================================= -->
+
+    <nav class="bottom-nav">
+
+        <button
+            class="nav-item active"
+            data-page="home"
+            type="button"
+        >
+
+            <i class="ri-home-5-line"></i>
+
+            <span>
+                Home
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-item"
+            data-page="quiz"
+            type="button"
+        >
+
+            <i class="ri-brain-line"></i>
+
+            <span>
+                Quiz
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-item"
+            data-page="progress"
+            type="button"
+        >
+
+            <i class="ri-bar-chart-box-line"></i>
+
+            <span>
+                Progress
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-item"
+            data-page="profile"
+            type="button"
+        >
+
+            <i class="ri-user-3-line"></i>
+
+            <span>
+                Profile
+            </span>
+
+        </button>
+
+    </nav>
+
+
+</main>
+
+
+<!-- Dashboard JavaScript -->
+
+<script
+    type="module"
+    src="js/dashboard.js"
+></script>
+
+
+</body>
+
+</html>

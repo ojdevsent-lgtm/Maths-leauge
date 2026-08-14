@@ -1,0 +1,352 @@
+.leaderboard-page {
+    min-height: 100vh;
+
+    padding: 22px 18px 110px;
+
+    background: var(--background);
+}
+
+
+.leaderboard-header {
+    max-width: 700px;
+
+    margin: 0 auto 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+}
+
+
+.back-button {
+    width: 40px;
+    height: 40px;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    text-decoration: none;
+}
+
+
+.leaderboard-header p {
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+
+.leaderboard-header h1 {
+    margin: 3px 0 0;
+
+    font-family: "Space Grotesk", sans-serif;
+
+    font-size: 22px;
+}
+
+
+.leaderboard-intro {
+    max-width: 700px;
+
+    margin: 0 auto 28px;
+}
+
+
+.leaderboard-intro h2 {
+    margin: 7px 0;
+
+    font-family: "Space Grotesk", sans-serif;
+
+    font-size: 31px;
+
+    letter-spacing: -.8px;
+}
+
+
+.leaderboard-intro p {
+    margin: 0;
+
+    max-width: 420px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+.eyebrow {
+    color: var(--primary);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+
+/* TABS */
+
+.leaderboard-tabs {
+    max-width: 700px;
+
+    margin: 0 auto 25px;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+.leaderboard-tab {
+    padding: 12px 5px;
+
+    border: 0;
+
+    border-bottom: 2px solid transparent;
+
+    background: transparent;
+
+    color: var(--muted);
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.leaderboard-tab.active {
+    border-bottom-color: var(--primary);
+
+    color: var(--primary);
+}
+
+
+/* TOP THREE */
+
+.top-three {
+    max-width: 700px;
+
+    margin: 0 auto 30px;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 8px;
+
+    align-items: end;
+}
+
+
+.top-card {
+    padding: 18px 8px;
+
+    text-align: center;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+}
+
+
+.top-card.first {
+    padding-top: 25px;
+}
+
+
+.top-rank {
+    color: var(--primary);
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+
+.top-name {
+    display: block;
+
+    margin: 8px 0 3px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+.top-points {
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+
+/* RANKING */
+
+.ranking-section {
+    max-width: 700px;
+
+    margin: 0 auto;
+}
+
+
+.ranking-heading {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: .7px;
+}
+
+
+.ranking-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.ranking-item {
+    min-height: 62px;
+
+    padding: 9px 12px;
+
+    display: grid;
+
+    grid-template-columns: 32px 1fr auto;
+
+    align-items: center;
+
+    gap: 10px;
+
+    border: 1px solid var(--border);
+
+    background: var(--surface);
+}
+
+
+.ranking-number {
+    color: var(--muted);
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-align: center;
+}
+
+
+.ranking-name {
+    display: block;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.ranking-id {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+
+.ranking-points {
+    text-align: right;
+}
+
+
+.ranking-points strong {
+    display: block;
+
+    font-size: 13px;
+}
+
+
+.ranking-points span {
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+
+.leaderboard-loading,
+.leaderboard-empty {
+    padding: 30px;
+
+    text-align: center;
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    border: 1px solid var(--border);
+}
+
+
+.leaderboard-message {
+    display: none;
+
+    max-width: 700px;
+
+    margin: 20px auto;
+
+    padding: 12px;
+
+    font-size: 11px;
+
+    background: #fef3f2;
+
+    border: 1px solid #fecdca;
+
+    color: #b42318;
+}
+
+
+.leaderboard-message.show {
+    display: block;
+}
