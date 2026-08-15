@@ -1,428 +1,52 @@
-/* =========================================
-   ML TRIVIA — STUDENT DASHBOARD
-========================================= */
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-
-import {
-    getAuth,
-    onAuthStateChanged,
-    signOut
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-
-import {
-    getFirestore,
-    doc,
-    getDoc
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
-
-/* =========================================
-   FIREBASE CONFIG
-========================================= */
-
-const firebaseConfig = {
-
-    apiKey: "AIzaSyBjjAVhUzy9HKuaXfmpKmNsoABd1ZEQ0zk",
-
-    authDomain: "mltp-9f154.firebaseapp.com",
-
-    projectId: "mltp-9f154",
-
-    storageBucket: "mltp-9f154.firebasestorage.app",
-
-    messagingSenderId: "787010966941",
-
-    appId: "1:787010966941:web:1d4e4553cc502a6a27cb74",
-
-    measurementId: "G-68NNYR62Z2"
-
-};
-
-
-/* =========================================
-   INITIALIZE FIREBASE
-========================================= */
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-const db = getFirestore(app);
-
-
-/* =========================================
-   ELEMENTS
-========================================= */
-
-const studentName =
-    document.getElementById("studentName");
-
-const registrationNumber =
-    document.getElementById("registrationNumber");
-
-const totals =
-    document.getElementById("totalPoints");
-
-const quizzesCompleted =
-    document.getElementById("quizzesCompleted");
-
-const averageScore =
-    document.getElementById("averageScore");
-
-const leagueRank =
-    document.getElementById("leagueRank");
-
-const activityEmpty =
-    document.getElementById("activityEmpty");
-
-const activityList =
-    document.getElementById("activityList");
-
-
-/* =========================================
-   LOAD STUDENT
-========================================= */
-
-onAuthStateChanged(
-    auth,
-    async user => {
-
-        /* ================================
-           NO USER
-        ================================= */
-
-        if (!user) {
-
-            window.location.href =
-                "auth.html";
-
-            return;
-        }
-
-
-        /* ================================
-           GET STUDENT DOCUMENT
-        ================================= */
-
-        try {
-
-            const studentRef =
-                doc(
-                    db,
-                    "mlTriviaStudents",
-                    user.uid
-                );
-
-
-            const studentSnapshot =
-                await getDoc(studentRef);
-
-
-            if (!studentSnapshot.exists()) {
-
-                console.error(
-                    "Student profile not found."
-                );
-
-                window.location.href =
-                    "auth.html";
-
-                return;
-            }
-
-
-            const student =
-                studentSnapshot.data();
-
-
-            /* ================================
-               DISPLAY STUDENT
-            ================================= */
-
-            if (studentName) {
-
-                const firstName =
-                    student.fullName
-                        ?.trim()
-                        .split(" ")[0];
-
-                studentName.textContent =
-                    firstName || "Student";
-            }
-
-
-            if (registrationNumber) {
-
-                registrationNumber.textContent =
-                    student.registrationNumber ||
-                    "Not assigned";
-            }
-
-
-            if (totalPoints) {
-
-                totalPoints.textContent =
-                    student.totalPoints ?? 0;
-            }
-
-
-            if (quizzesCompleted) {
-
-                quizzesCompleted.textContent =
-                    student.quizzesCompleted ?? 0;
-            }
-
-
-            if (averageScore) {
-
-                averageScore.textContent =
-                    `${student.averageScore ?? 0}%`;
-            }
-
-
-            if (leagueRank) {
-
-                leagueRank.textContent =
-                    student.leagueRank || "—";
-            }
-
-
-            /* ================================
-               ACTIVITY
-            ================================= */
-
-            loadActivity(student);
-
-
-        } catch (error) {
-
-            console.error(
-                "Dashboard error:",
-                error
-            );
-
-        }
-
-    }
-);
-
-
-/* =========================================
-   ACTIVITY
-========================================= */
-
-function loadActivity(student) {
-
-    /*
-       Quiz history will be connected
-       when we build the quiz system.
-
-       For now, show the empty state.
-    */
-
-    const hasActivity =
-        student.quizzesCompleted &&
-        student.quizzesCompleted > 0;
-
-
-    if (hasActivity) {
-
-        if (activityEmpty) {
-
-            activityEmpty.style.display =
-                "none";
-        }
-
-        if (activityList) {
-
-            activityList.innerHTML = `
-                <div class="activity-item">
-
-                    <div class="activity-item-left">
-
-                        <div class="activity-item-icon">
-
-                            <i class="ri-brain-line"></i>
-
-                        </div>
-
-                        <div>
-
-                            <strong>
-                                Maths League Quiz
-                            </strong>
-
-                            <span>
-                                Quiz history will appear here.
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-            `;
-
-        }
-
+import { auth } from "./firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-functions.js";
+
+const functions = getFunctions(auth.app, "europe-west1");
+const getStudentDashboard = httpsCallable(functions, "getStudentDashboard");
+const $ = id => document.getElementById(id);
+
+function set(id, value) { const el = $(id); if (el) el.textContent = value; }
+function esc(v) { return String(v ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c])); }
+
+onAuthStateChanged(auth, async user => {
+  if (!user) return (window.location.href = "auth.html");
+  try {
+    const { data } = await getStudentDashboard();
+    const student = data.student || {};
+    set("studentName", (student.fullName || "Student").trim().split(" ")[0]);
+    set("registrationNumber", student.registrationNumber || "Not assigned");
+    set("totalPoints", data.stats.totalPoints);
+    set("quizzesCompleted", data.stats.quizzesCompleted);
+    set("averageScore", `${data.stats.averageScore}%`);
+    set("leagueRank", data.stats.leagueRank ? `#${data.stats.leagueRank}` : "—");
+
+    const list = $("activityList");
+    const empty = $("activityEmpty");
+    if (data.recentAttempts?.length) {
+      empty && (empty.style.display = "none");
+      list.innerHTML = data.recentAttempts.map(a => `
+        <div class="activity-item">
+          <div class="activity-item-left">
+            <div class="activity-item-icon"><i class="ri-brain-line"></i></div>
+            <div><strong>${esc(a.quizTitle || "Daily Quiz")}</strong><span>${a.score}/${a.totalQuestions} · ${a.points} points</span></div>
+          </div>
+        </div>`).join("");
     } else {
-
-        if (activityEmpty) {
-
-            activityEmpty.style.display =
-                "block";
-        }
-
-        if (activityList) {
-
-            activityList.innerHTML = "";
-        }
-
+      empty && (empty.style.display = "block");
+      list && (list.innerHTML = "");
     }
-
-}
-
-
-/* =========================================
-   NAVIGATION
-========================================= */
-
-const navItems =
-    document.querySelectorAll(".nav-item");
-
-
-navItems.forEach(item => {
-
-    item.addEventListener(
-        "click",
-        () => {
-
-            navItems.forEach(nav => {
-
-                nav.classList.remove(
-                    "active"
-                );
-
-            });
-
-
-            item.classList.add("active");
-
-
-            const page =
-                item.dataset.page;
-
-
-            handleNavigation(page);
-
-        }
-    );
-
+  } catch (error) {
+    console.error(error);
+  }
 });
 
+document.querySelectorAll(".nav-item[data-page]").forEach(item => item.addEventListener("click", () => {
+  const routes = { quiz: "quiz.html", progress: "progress.html", profile: "profile.html" };
+  if (routes[item.dataset.page]) window.location.href = routes[item.dataset.page];
+}));
 
-/* =========================================
-   NAVIGATION HANDLER
-========================================= */
-
-function handleNavigation(page) {
-
-    switch (page) {
-
-        case "home":
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-
-            break;
-
-
-        case "quiz":
-
-            window.location.href =
-                "quiz.html";
-
-            break;
-
-
-        case "progress":
-
-            window.location.href =
-                "progress.html";
-
-            break;
-
-
-        case "profile":
-
-            window.location.href =
-                "profile.html";
-
-            break;
-
-    }
-
-}
-
-
-/* =========================================
-   QUICK ACTIONS
-========================================= */
-
-document
-    .getElementById("quizAction")
-    ?.addEventListener(
-        "click",
-        () => {
-
-            window.location.href =
-                "quiz.html";
-
-        }
-    );
-
-
-document
-    .getElementById("progressAction")
-    ?.addEventListener(
-        "click",
-        () => {
-
-            window.location.href =
-                "progress.html";
-
-        }
-    );
-
-
-document
-    .getElementById("startFirstQuiz")
-    ?.addEventListener(
-        "click",
-        () => {
-
-            window.location.href =
-                "quiz.html";
-
-        }
-    );
-
-
-/* =========================================
-   VIEW ALL ACTIVITY
-========================================= */
-
-document
-    .getElementById("viewAllActivity")
-    ?.addEventListener(
-        "click",
-        () => {
-
-            window.location.href =
-                "progress.html";
-
-        }
-    );
+$("quizAction")?.addEventListener("click", () => location.href = "quiz.html");
+$("progressAction")?.addEventListener("click", () => location.href = "progress.html");
+$("startFirstQuiz")?.addEventListener("click", () => location.href = "quiz.html");
+$("viewAllActivity")?.addEventListener("click", () => location.href = "progress.html");
