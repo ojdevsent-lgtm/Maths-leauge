@@ -3,7 +3,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
-  onAuthStateChanged
+  onAuthStateChanged,
+  deleteUser
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-functions.js";
 
@@ -82,6 +83,9 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "dashboard.html";
     } catch (error) {
       console.error(error);
+      if (error?.code?.startsWith("functions/") && auth.currentUser?.uid) {
+        try { await deleteUser(auth.currentUser); } catch (cleanupError) { console.error("Signup cleanup failed:", cleanupError); }
+      }
       message("signupMessage", friendlyError(error));
     } finally {
       if (submit) submit.disabled = false;

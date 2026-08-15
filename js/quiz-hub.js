@@ -24,8 +24,14 @@ onAuthStateChanged(auth, async user => {
     const result = await getDailyQuiz();
     const data = result.data;
     dailyQuiz.dataset.completed = data.completed ? "true" : "false";
-    dailyStatus.textContent = data.completed ? "Already Taken" : "Available";
-    dailyStatus.classList.toggle("available", !data.completed);
+    dailyQuiz.dataset.active = data.active === false ? "false" : "true";
+    if (data.active === false) {
+      dailyStatus.textContent = "Unavailable";
+      dailyStatus.classList.remove("available");
+    } else {
+      dailyStatus.textContent = data.completed ? "Already Taken" : "Available";
+      dailyStatus.classList.toggle("available", !data.completed);
+    }
   } catch (error) {
     console.error(error);
     message("We couldn't check your quiz status. Please try again.");
@@ -34,6 +40,10 @@ onAuthStateChanged(auth, async user => {
 
 dailyQuiz?.addEventListener("click", () => {
   if (!auth.currentUser) return (window.location.href = "auth.html");
+  if (dailyQuiz.dataset.active === "false") {
+    message("Today's Daily Quiz is currently unavailable.");
+    return;
+  }
   if (dailyQuiz.dataset.completed === "true") {
     message("Quiz already taken. You have already completed today's Daily Quiz.");
     return;

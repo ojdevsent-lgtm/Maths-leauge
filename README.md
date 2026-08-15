@@ -25,3 +25,32 @@ Before production, review Firebase Authentication authorized domains, enable App
 - `quizAttempts/{uid}/attempts/{quizId}` — immutable quiz results.
 - `leaderboard/{uid}` — public ranking projection maintained by the backend.
 - `counters/studentRegistration` — private registration-number counter.
+
+
+## Production admin setup
+
+The admin dashboard is at `admin.html`. Admin operations are protected server-side by Cloud Functions and the Firestore `adminUsers/{uid}` document.
+
+After deploying, create this Firestore document manually for each administrator:
+
+Collection: `adminUsers`
+Document ID: the administrator's Firebase Authentication UID
+Fields:
+- `active`: `true`
+- `name`: administrator name (optional)
+
+Do not create admin access from the client.
+
+### Deployment
+
+From the project root:
+
+```bash
+firebase login
+firebase use mltp-9f154
+firebase deploy --only functions,firestore:rules,hosting
+```
+
+The current scoring model is 1 correct answer = 1 point.
+
+If the database contains test data from the previous x10 scoring system, sign in as an administrator, open `admin.html`, and use **Rebuild statistics**. It recalculates student totals and leaderboard values from stored quiz attempt scores.

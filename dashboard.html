@@ -51,15 +51,19 @@
         </div>
 
 
-        <button
-            class="notification-btn"
-            type="button"
-            aria-label="Notifications"
-        >
-
-            <i class="ri-notification-3-line"></i>
-
-        </button>
+        <div class="dashboard-header-actions">
+            <a href="admin.html" id="adminLink" class="admin-header-link" hidden>
+                <i class="ri-settings-3-line"></i>
+                Admin
+            </a>
+            <button
+                class="notification-btn"
+                type="button"
+                aria-label="Notifications"
+            >
+                <i class="ri-notification-3-line"></i>
+            </button>
+        </div>
 
     </header>
 
@@ -123,7 +127,7 @@
 
             <div class="progress-icon">
 
-               <a href="leaderboard.html"> <i class="ri-trophy-line"></i</a>
+               <a href="leaderboard.html"> <i class="ri-trophy-line"></i></a>
 
             </div>
 
@@ -257,6 +261,21 @@
 
 
     <!-- ================================
+         ANNOUNCEMENTS
+    ================================= -->
+
+    <section class="dashboard-section dashboard-announcements-section hidden">
+
+        <div class="section-heading">
+            <h3>Announcements</h3>
+        </div>
+
+        <div id="announcementsList" class="dashboard-announcements-list"></div>
+
+    </section>
+
+
+    <!-- ================================
          RECENT ACTIVITY
     ================================= -->
 
@@ -355,6 +374,16 @@
                 Quiz
             </span>
 
+        </button>
+
+
+        <button
+            class="nav-item"
+            data-page="rank"
+            type="button"
+        >
+            <i class="ri-trophy-line"></i>
+            <span>Rank</span>
         </button>
 
 

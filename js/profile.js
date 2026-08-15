@@ -25,3 +25,8 @@ onAuthStateChanged(auth, async user => {
 });
 $("logoutButton")?.addEventListener("click", async () => { await signOut(auth); location.href = "auth.html"; });
 $("backButton")?.addEventListener("click", () => history.back());
+
+document.querySelectorAll(".nav-item[data-page]").forEach(item => item.addEventListener("click", () => {
+  const routes = { home: "dashboard.html", rank: "leaderboard.html", progress: "progress.html", profile: "profile.html" };
+  if (routes[item.dataset.page]) location.href = routes[item.dataset.page];
+}));

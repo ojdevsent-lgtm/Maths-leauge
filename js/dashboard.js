@@ -4,6 +4,7 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
 
 const functions = getFunctions(auth.app, "europe-west1");
 const getStudentDashboard = httpsCallable(functions, "getStudentDashboard");
+const isAdmin = httpsCallable(functions, "isAdmin");
 const $ = id => document.getElementById(id);
 
 function set(id, value) { const el = $(id); if (el) el.textContent = value; }
@@ -21,6 +22,16 @@ onAuthStateChanged(auth, async user => {
     set("averageScore", `${data.stats.averageScore}%`);
     set("leagueRank", data.stats.leagueRank ? `#${data.stats.leagueRank}` : "—");
 
+    const announcements = $("announcementsList");
+    if (announcements) {
+      announcements.innerHTML = (data.announcements || []).map(a => `
+        <article class="dashboard-announcement">
+          <strong>${esc(a.title)}</strong>
+          <p>${esc(a.body)}</p>
+        </article>`).join("");
+      announcements.closest(".dashboard-section")?.classList.toggle("hidden", !(data.announcements || []).length);
+    }
+
     const list = $("activityList");
     const empty = $("activityEmpty");
     if (data.recentAttempts?.length) {
@@ -36,13 +47,22 @@ onAuthStateChanged(auth, async user => {
       empty && (empty.style.display = "block");
       list && (list.innerHTML = "");
     }
+
+    try {
+      const { data: adminData } = await isAdmin();
+      const adminLink = $("adminLink");
+      if (adminLink) adminLink.hidden = !adminData.admin;
+    } catch {
+      const adminLink = $("adminLink");
+      if (adminLink) adminLink.hidden = true;
+    }
   } catch (error) {
     console.error(error);
   }
 });
 
 document.querySelectorAll(".nav-item[data-page]").forEach(item => item.addEventListener("click", () => {
-  const routes = { quiz: "quiz.html", progress: "progress.html", profile: "profile.html" };
+  const routes = { quiz: "quiz.html", rank: "leaderboard.html", progress: "progress.html", profile: "profile.html" };
   if (routes[item.dataset.page]) window.location.href = routes[item.dataset.page];
 }));
 

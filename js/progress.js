@@ -37,3 +37,9 @@ function renderHistory(attempts) {
     return `<div class="history-item"><div class="history-left"><span class="history-title">${a.quizTitle || "Daily Quiz"}</span><span class="history-date">${date}</span></div><div class="history-right"><span class="history-score">${a.score}/${a.totalQuestions}</span><span class="history-points">${a.points} points</span></div></div>`;
   }).join("");
 }
+
+document.querySelectorAll(".nav-item[data-page]").forEach(item => item.addEventListener("click", () => {
+  const routes = { home: "dashboard.html", rank: "leaderboard.html", progress: "progress.html", profile: "profile.html" };
+  if (routes[item.dataset.page]) location.href = routes[item.dataset.page];
+}));
+$("profileButton")?.addEventListener("click", () => location.href = "profile.html");
