@@ -13,9 +13,32 @@ export async function currentUser() {
   return data.user;
 }
 
+// Never run database requests directly inside onAuthStateChange. Supabase's
+// auth lock can remain held while the callback is executing, which can cause
+// an RPC awaited from the callback to hang indefinitely.
 export function watchAuth(callback) {
-  supabase.auth.getSession().then(({ data }) => callback(data.session?.user ?? null));
-  return supabase.auth.onAuthStateChange((_event, session) => callback(session?.user ?? null));
+  let lastUserId = undefined;
+  let timer = null;
+  const notify = user => {
+    const id = user?.id ?? null;
+    if (id === lastUserId) return;
+    lastUserId = id;
+    clearTimeout(timer);
+    timer = setTimeout(() => callback(user), 0);
+  };
+
+  supabase.auth.getSession().then(({ data }) => notify(data.session?.user ?? null));
+  const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+    notify(session?.user ?? null);
+  });
+
+  return {
+    data: { subscription: data.subscription },
+    unsubscribe() {
+      clearTimeout(timer);
+      data.subscription.unsubscribe();
+    }
+  };
 }
 
 export function friendlyError(error) {
