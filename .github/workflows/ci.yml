@@ -26,12 +26,17 @@ jobs:
           set -euo pipefail
           find js -type f -name '*.js' -print0 | xargs -0 -n1 node --check
 
-      - name: Ensure frontend no longer imports Firebase client SDKs
+      - name: Ensure legacy Firebase integration is removed
         shell: bash
         run: |
           set -euo pipefail
-          if grep -RInE 'gstatic\.com/firebase|from ["'"']\.\/firebase\.js["'"']' js --include='*.js'; then
-            echo 'Legacy Firebase client imports remain in frontend JavaScript.'
+          test ! -e js/firebase.js
+          test ! -e .firebaserc
+          test ! -e firebase.json
+          test ! -e firestore.rules
+          test ! -d functions
+          if grep -RInE 'gstatic\.com/firebase|firebase\.js|initializeApp\(|firebaseConfig' js --include='*.js'; then
+            echo 'Legacy Firebase code remains in frontend JavaScript.'
             exit 1
           fi
 
@@ -49,4 +54,5 @@ jobs:
           set -euo pipefail
           test -f js/core/session.js
           test -f js/services/student.service.js
+          test -f js/services/quiz.service.js
           test -f docs/architecture.md
