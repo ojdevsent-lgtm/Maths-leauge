@@ -57,9 +57,6 @@ export async function getAttempts(user) {
 }
 
 export async function getRank(student) {
-  // Ranking is intentionally optional here because RLS should not expose the
-  // full student table to a normal student. The server RPC can supply it when
-  // available; failure must never block the rest of the student experience.
   try {
     const { data, error } = await withTimeout(supabase.rpc("get_student_rank", { p_student_id: student.id }));
     if (error) return null;
@@ -78,26 +75,30 @@ export async function getAnnouncements() {
   return data ?? [];
 }
 
-export async function getStudentOverview(user) {
-  const [student, attempts, announcements] = await Promise.all([
-    getStudent(user),
-    getAttempts(user),
-    getAnnouncements()
-  ]);
-
+function calculateStats(student, attempts) {
   const scored = attempts.filter(a => a.totalQuestions > 0);
   const averageScore = scored.length
     ? Math.round(scored.reduce((sum, a) => sum + (a.score / a.totalQuestions) * 100, 0) / scored.length)
     : 0;
-
   return {
-    student,
-    attempts,
-    announcements,
-    stats: {
-      totalPoints: student.points,
-      quizzesCompleted: student.quizzesTaken || attempts.length,
-      averageScore
-    }
+    totalPoints: student.points,
+    quizzesCompleted: student.quizzesTaken || attempts.length,
+    averageScore
   };
+}
+
+export async function getStudentProgress(user) {
+  const [student, attempts] = await Promise.all([
+    getStudent(user),
+    getAttempts(user)
+  ]);
+  return { student, attempts, stats: calculateStats(student, attempts) };
+}
+
+export async function getStudentOverview(user) {
+  const [progress, announcements] = await Promise.all([
+    getStudentProgress(user),
+    getAnnouncements()
+  ]);
+  return { ...progress, announcements };
 }
