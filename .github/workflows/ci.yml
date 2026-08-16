@@ -22,7 +22,7 @@ jobs:
           cache: npm
           cache-dependency-path: functions/package.json
 
-      - name: Install functions dependencies
+      - name: Install legacy functions dependencies
         working-directory: functions
         run: npm install --no-audit --no-fund
 
@@ -32,9 +32,18 @@ jobs:
           set -euo pipefail
           find js functions -type d -name node_modules -prune -o -type f -name '*.js' -print0 | xargs -0 -n1 node --check
 
-      - name: Run functions smoke tests
+      - name: Ensure frontend no longer imports Firebase client SDKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE 'gstatic\.com/firebase|from ["'"']\.\/firebase\.js["'"']' js --include='*.js'; then
+            echo 'Legacy Firebase client imports remain in frontend JavaScript.'
+            exit 1
+          fi
+
+      - name: Run legacy functions smoke tests
         working-directory: functions
         run: npm test
 
-      - name: Validate Firebase configuration
-        run: node -e "for (const file of ['firebase.json', '.firebaserc']) JSON.parse(require('fs').readFileSync(file, 'utf8')); console.log('Firebase configuration JSON is valid')"
+      - name: Validate legacy Firebase configuration JSON
+        run: node -e "for (const file of ['firebase.json', '.firebaserc']) JSON.parse(require('fs').readFileSync(file, 'utf8')); console.log('Legacy Firebase configuration JSON is valid')"
