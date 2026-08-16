@@ -1,4 +1,39 @@
-import { supabase, watchAuth } from "./supabase.js";
-const dailyQuiz=document.getElementById("dailyQuiz"),dailyStatus=document.getElementById("dailyStatus"),quizMessage=document.getElementById("quizMessage");function message(t){if(!quizMessage)return;quizMessage.textContent=t;quizMessage.classList.add("show");}
-watchAuth(async user=>{if(!user){dailyStatus.textContent="Login Required";dailyQuiz?.setAttribute("aria-disabled","true");return;}try{const{data,error}=await supabase.rpc("get_daily_quiz");if(error)throw error;dailyQuiz.dataset.completed=data.completed?"true":"false";dailyQuiz.dataset.active=data.questions?.length?"true":"false";dailyStatus.textContent=!data.questions?.length?"Unavailable":data.completed?"Already Taken":"Available";dailyStatus.classList.toggle("available",!!data.questions?.length&&!data.completed);}catch(error){console.error(error);message("We couldn't check your quiz status. Please try again.");}});
-dailyQuiz?.addEventListener("click",()=>{if(dailyQuiz.dataset.active==="false")return message("Today's Daily Quiz is currently unavailable.");if(dailyQuiz.dataset.completed==="true")return message("Quiz already taken. You have already completed today's Daily Quiz.");location.href="take-quiz.html";});
+import { requireUser, onSignedOut } from "./core/session.js";
+import { getDailyQuiz } from "./services/quiz.service.js";
+
+const dailyQuiz = document.getElementById("dailyQuiz");
+const dailyStatus = document.getElementById("dailyStatus");
+const quizMessage = document.getElementById("quizMessage");
+
+function message(text) {
+  if (!quizMessage) return;
+  quizMessage.textContent = text;
+  quizMessage.classList.add("show");
+}
+
+async function loadQuizStatus() {
+  try {
+    const user = await requireUser();
+    if (!user) return;
+    const data = await getDailyQuiz();
+    const available = Array.isArray(data.questions) && data.questions.length > 0;
+    dailyQuiz?.setAttribute("data-completed", data.completed ? "true" : "false");
+    dailyQuiz?.setAttribute("data-active", available ? "true" : "false");
+    if (dailyStatus) {
+      dailyStatus.textContent = !available ? "Unavailable" : data.completed ? "Already Taken" : "Available";
+      dailyStatus.classList.toggle("available", available && !data.completed);
+    }
+  } catch (error) {
+    console.error("Quiz status failed:", error);
+    message(error.message || "We couldn't check your quiz status. Please try again.");
+  }
+}
+
+loadQuizStatus();
+onSignedOut();
+
+dailyQuiz?.addEventListener("click", () => {
+  if (dailyQuiz.dataset.active === "false") return message("Today's Daily Quiz is currently unavailable.");
+  if (dailyQuiz.dataset.completed === "true") return message("Quiz already taken. You have already completed today's Daily Quiz.");
+  location.href = "take-quiz.html";
+});

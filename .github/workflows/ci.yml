@@ -19,31 +19,40 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: functions/package.json
-
-      - name: Install legacy functions dependencies
-        working-directory: functions
-        run: npm install --no-audit --no-fund
 
       - name: Check JavaScript syntax
         shell: bash
         run: |
           set -euo pipefail
-          find js functions -type d -name node_modules -prune -o -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+          find js -type f -name '*.js' -print0 | xargs -0 -n1 node --check
 
-      - name: Ensure frontend no longer imports Firebase client SDKs
+      - name: Ensure legacy Firebase integration is removed
         shell: bash
         run: |
           set -euo pipefail
-          if grep -RInE 'gstatic\.com/firebase|from ["'"']\.\/firebase\.js["'"']' js --include='*.js'; then
-            echo 'Legacy Firebase client imports remain in frontend JavaScript.'
+          test ! -e js/firebase.js
+          test ! -e .firebaserc
+          test ! -e firebase.json
+          test ! -e firestore.rules
+          test ! -d functions
+          if grep -RInE 'gstatic\.com/firebase|firebase\.js|initializeApp\(|firebaseConfig' js --include='*.js'; then
+            echo 'Legacy Firebase code remains in frontend JavaScript.'
             exit 1
           fi
 
-      - name: Run legacy functions smoke tests
-        working-directory: functions
-        run: npm test
+      - name: Ensure protected pages use the centralized session layer
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in js/profile.js js/progress.js js/dashboard.js; do
+            grep -q 'core/session.js' "$file" || { echo "$file is missing the centralized session layer"; exit 1; }
+          done
 
-      - name: Validate legacy Firebase configuration JSON
-        run: node -e "for (const file of ['firebase.json', '.firebaserc']) JSON.parse(require('fs').readFileSync(file, 'utf8')); console.log('Legacy Firebase configuration JSON is valid')"
+      - name: Check required platform modules exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f js/core/session.js
+          test -f js/services/student.service.js
+          test -f js/services/quiz.service.js
+          test -f docs/architecture.md
