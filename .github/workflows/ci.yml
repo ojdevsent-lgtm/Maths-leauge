@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          find js functions -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+          find js functions -type d -name node_modules -prune -o -type f -name '*.js' -print0 | xargs -0 -n1 node --check
 
       - name: Run functions smoke tests
         working-directory: functions
