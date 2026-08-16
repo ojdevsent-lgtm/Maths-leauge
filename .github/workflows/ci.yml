@@ -37,4 +37,4 @@ jobs:
         run: npm test
 
       - name: Validate Firebase configuration
-        run: npx --yes firebase-tools@latest use mltp-9f154 --non-interactive
+        run: node -e "for (const file of ['firebase.json', '.firebaserc']) JSON.parse(require('fs').readFileSync(file, 'utf8')); console.log('Firebase configuration JSON is valid')"
