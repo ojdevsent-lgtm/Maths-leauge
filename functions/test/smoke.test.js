@@ -13,10 +13,11 @@ test("exports the expected callable functions", () => {
     "isAdmin",
     "rebuildStats",
     "getAdminDashboard",
-    "getAdminStudents",
+    "getAdminQuiz",
+    "saveAdminQuiz",
     "updateStudentStatus",
-    "updateDailyQuiz",
-    "resetDailyQuiz"
+    "createAnnouncement",
+    "toggleAnnouncement"
   ];
 
   for (const name of expected) {
@@ -24,7 +25,7 @@ test("exports the expected callable functions", () => {
   }
 });
 
-test("does not expose quiz answers from the public result module", () => {
+test("keeps quiz answers behind the callable function boundary", () => {
   const fs = require("node:fs");
   const source = fs.readFileSync(require.resolve("../index.js"), "utf8");
   assert.match(source, /publicQuestions/);
