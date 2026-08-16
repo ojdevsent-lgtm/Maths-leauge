@@ -1,5 +1,5 @@
 import { requireUser, onSignedOut, displayError } from "./core/session.js";
-import { getStudentOverview, getRank } from "./services/student.service.js";
+import { getStudentProgress, getRank } from "./services/student.service.js";
 
 const $ = id => document.getElementById(id);
 const set = (id, value) => { const element = $(id); if (element) element.textContent = value; };
@@ -38,7 +38,7 @@ async function loadProgress() {
   try {
     const user = await requireUser();
     if (!user) return;
-    const overview = await getStudentOverview(user);
+    const overview = await getStudentProgress(user);
     const rank = await getRank(overview.student);
 
     set("studentName", overview.student.fullName || "Student");
