@@ -31,6 +31,7 @@ service cloud.firestore {
       allow read: if isAdmin() || (signedIn() && resource.data.status == 'live');
       allow create, update, delete: if isAdmin();
       match /questions/{questionId} {
+        // Question documents must contain only public question data. The answer key is stored separately.
         allow read: if isAdmin() || (signedIn() && get(/databases/$(database)/documents/quizzes/$(quizId)).data.status == 'live');
         allow create, update, delete: if isAdmin();
       }
@@ -40,16 +41,12 @@ service cloud.firestore {
       allow read: if isAdmin() || (signedIn() && resource.data.studentId == request.auth.uid);
       allow create: if signedIn()
         && request.resource.data.studentId == request.auth.uid
-        && request.resource.data.status == 'submitted'
+        && request.resource.data.status == 'in_progress'
         && request.resource.data.quizId is string
         && request.resource.data.answers is map
-        && request.resource.data.totalQuestions is int
-        && request.resource.data.answeredQuestions is int
         && request.resource.data.startedAt is string
-        && request.resource.data.keys().hasOnly(['studentId','quizId','status','answers','totalQuestions','answeredQuestions','startedAt','submittedAt','autoSubmitted'])
-        && request.resource.data.totalQuestions > 0
-        && request.resource.data.answeredQuestions >= 0
-        && request.resource.data.answeredQuestions <= request.resource.data.totalQuestions;
+        && request.resource.data.keys().hasOnly(['studentId','quizId','status','answers','startedAt','createdAt']);
+      // Students never update attempts directly. Trusted Cloud Functions finalize them.
       allow update, delete: if isAdmin();
     }
 
