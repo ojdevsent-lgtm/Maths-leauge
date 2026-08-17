@@ -1,6 +1,6 @@
 import { auth, db } from "../firebase/config.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const $ = id => document.getElementById(id);
 const message = $("dashboardMessage");
@@ -8,12 +8,37 @@ const content = $("dashboardContent");
 
 $("logoutButton")?.addEventListener("click", async () => { await signOut(auth); window.location.href = "../auth.html"; });
 
-function showError(text) { message.textContent = text; message.classList.add("error"); content.hidden = true; }
+function showError(text) { message.textContent = text; message.classList.add("error"); message.hidden = false; content.hidden = true; }
+
+async function ensureStudentProfile(user) {
+  const ref = doc(db, "students", user.uid);
+  const snap = await getDoc(ref);
+  if (snap.exists()) return snap.data();
+
+  // Recovery path for accounts created before/while the profile write failed.
+  // Firestore rules still require the authenticated UID and zeroed competition fields.
+  const profile = {
+    uid: user.uid,
+    fullName: user.displayName || (user.email ? user.email.split("@")[0] : "Student"),
+    email: user.email || "",
+    phone: "",
+    school: "Not provided",
+    state: "Not provided",
+    leaguePoints: 0,
+    quizzesTaken: 0,
+    averageAccuracy: 0,
+    status: "active",
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  };
+  await setDoc(ref, profile);
+  const created = await getDoc(ref);
+  if (!created.exists()) throw new Error("student-profile-create-failed");
+  return created.data();
+}
 
 async function loadDashboard(user) {
-  const studentSnap = await getDoc(doc(db, "students", user.uid));
-  if (!studentSnap.exists()) throw new Error("student-profile-missing");
-  const student = studentSnap.data();
+  const student = await ensureStudentProfile(user);
   $("studentName").textContent = student.fullName || "Student";
   $("points").textContent = Number(student.leaguePoints || 0).toLocaleString();
   $("quizzesTaken").textContent = Number(student.quizzesTaken || 0);
@@ -53,7 +78,7 @@ onAuthStateChanged(auth, async user => {
   if (!user) { window.location.replace("../auth.html"); return; }
   try { await loadDashboard(user); }
   catch (error) {
-    console.error(error);
-    showError(error.message === "student-profile-missing" ? "Your student profile could not be found. If you just registered, wait for the latest deployment and register once more with a new email." : "We couldn't load your dashboard. Please try again.");
+    console.error("Dashboard load failed", error);
+    showError(error.message === "student-profile-create-failed" ? "Firebase signed you in, but Firestore rejected the student profile. Check the deployed Firestore rules." : "We couldn't load your dashboard. Please try again.");
   }
 });
