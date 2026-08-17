@@ -1,0 +1,15 @@
+.hero { min-height: calc(100vh - 76px); padding-block: 56px 72px; display: grid; align-items: center; gap: 40px; }
+.hero-copy { max-width: 700px; }
+.hero-lede { max-width: 620px; margin-bottom: 28px; color: var(--text-muted); font-size: 18px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero-card { padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+.hero-card-top, .stat-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hero-card-top { padding-bottom: 20px; color: var(--text-muted); font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+.status-dot::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: var(--success); }
+.score-panel { padding: 30px; border-radius: 18px; background: var(--surface-muted); text-align: center; }
+.score-panel span, .score-panel small, .stat-row span { display: block; color: var(--text-muted); font-size: 12px; }
+.score-panel strong { display: block; margin-top: 4px; font-size: 76px; line-height: 1; letter-spacing: -.06em; }
+.stat-row { margin-top: 18px; text-align: center; }
+.stat-row > div { flex: 1; }
+.stat-row strong { display: block; font-size: 16px; }
+@media (min-width: 860px) { .hero { grid-template-columns: 1.1fr .9fr; gap: 72px; } }
