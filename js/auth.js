@@ -1,12 +1,12 @@
 import {
   auth,
-  db,
+  functions,
   friendlyError,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  httpsCallable
 } from "./firebase.js";
-import { doc, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const $ = id => document.getElementById(id);
 function message(id, text, type = "error") { const el=$(id); if(!el)return; el.textContent=text; el.className=`auth-message show ${type}`; }
@@ -16,7 +16,8 @@ function explain(error) {
   if (code === "auth/email-already-in-use") return "An account with this email already exists. Log in instead.";
   if (code === "auth/weak-password") return "Password must be at least 6 characters.";
   if (code === "auth/invalid-email") return "Enter a valid email address.";
-  if (code === "permission-denied" || code === "firestore/permission-denied") return "Firebase signed you in, but Firestore rejected the profile. Deploy the current Firestore rules, then try again.";
+  if (/permission-denied|unauthenticated/i.test(code + error?.message)) return "Firebase signed you in, but the student profile could not be created. Check the deployed Cloud Function and Firestore configuration.";
+  if (/functions\/unavailable|functions\/deadline-exceeded|network/i.test(code + error?.message)) return "The account was created, but the student profile service is unavailable. Please try again when Firebase Functions is online.";
   return friendlyError(error);
 }
 
@@ -37,33 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setSubmitting(form,true); message("signupMessage","Creating your account…","success");
     try {
       const credential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = credential.user;
-      const batch = writeBatch(db);
-      batch.set(doc(db, "users", user.uid), {
-        uid: user.uid,
-        email: user.email,
-        role: "student",
-        createdAt: serverTimestamp()
-      });
-      batch.set(doc(db, "students", user.uid), {
-        uid: user.uid,
-        fullName,
-        email: user.email,
-        phone,
-        school,
-        state,
-        leaguePoints: 0,
-        quizzesTaken: 0,
-        averageAccuracy: 0,
-        status: "active",
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
-      await batch.commit();
+      const registerStudent = httpsCallable(functions,"registerStudent");
+      await registerStudent({fullName,phone,school,state,email});
       message("signupMessage","Account created. Redirecting…","success");
       window.location.replace("student/dashboard.html");
     } catch(error){
-      console.error("Signup failed",{code:error?.code,message:error?.message});
+      console.error("Signup/profile creation failed",{code:error?.code,message:error?.message});
       message("signupMessage",explain(error));
     } finally { setSubmitting(form,false); }
   });
