@@ -1,18 +1,16 @@
 import {
   auth,
-  functions,
+  db,
   friendlyError,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  httpsCallable
+  sendPasswordResetEmail
 } from "./firebase.js";
+import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const $ = id => document.getElementById(id);
 function message(id, text, type = "error") { const el=$(id); if(!el)return; el.textContent=text; el.className=`auth-message show ${type}`; }
 function setSubmitting(form, disabled) { const button=form?.querySelector("button[type=submit]"); if(button){button.disabled=disabled;button.setAttribute("aria-busy",String(disabled));} }
-
-const registerStudent = httpsCallable(functions, "registerStudent");
 
 document.addEventListener("DOMContentLoaded", () => {
   const signupPanel=$("signupPanel"), loginPanel=$("loginPanel");
@@ -31,7 +29,18 @@ document.addEventListener("DOMContentLoaded", () => {
     setSubmitting(form,true); message("signupMessage","Creating your account…","success");
     try {
       const credential = await createUserWithEmailAndPassword(auth, email, password);
-      await registerStudent({ fullName, phone, school, state, email: credential.user.email });
+      const user = credential.user;
+      await setDoc(doc(db, "students", user.uid), {
+        full_name: fullName,
+        email: user.email,
+        phone,
+        school,
+        state,
+        points: 0,
+        quizzes_taken: 0,
+        status: "active",
+        created_at: serverTimestamp()
+      });
       // Email verification is intentionally not required. Firebase signs the new
       // account in immediately, so registration goes straight to the dashboard.
       message("signupMessage","Account created. Redirecting…","success");
