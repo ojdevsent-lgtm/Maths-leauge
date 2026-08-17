@@ -1,7 +1,57 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#07101d"><meta name="description" content="Maths League — learn, compete and grow through mathematics challenges."><title>Maths League | Learn. Compete. Grow.</title><link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet"><link rel="stylesheet" href="css/style.css"></head><body><div class="app"><main class="main-content">
-<header class="top-header"><a class="brand" href="index.html"><div class="brand-mark">ML</div><div><h1>Maths League</h1><span>Learning & competition platform</span></div></a><a href="leaderboard.html" class="nav-item"><i class="ri-trophy-line"></i><span>Leaderboard</span></a></header>
-<section class="welcome-section"><p class="eyebrow">THE MATHS LEAGUE PLATFORM</p><h2>Think sharper.<br><span>Compete smarter.</span></h2><p class="welcome-text">A focused home for mathematics learners and competitors. Take daily challenges, build your record, understand your progress and rise through the league.</p><div class="welcome-actions"><a href="auth.html" class="primary-btn">Join the League <i class="ri-arrow-right-line"></i></a><a href="leaderboard.html" class="secondary-btn">Explore Rankings</a></div></section>
-<section class="platform-stats"><div class="platform-stat"><strong>10K+</strong><span>Learners</span></div><div class="platform-stat"><strong>500+</strong><span>Challenges</span></div><div class="platform-stat"><strong>36</strong><span>States</span></div></section>
-<section class="features-section"><div class="section-heading"><p class="eyebrow">ONE PLATFORM</p><h3>Everything around your growth.</h3></div><div class="feature-list"><article class="feature-card"><div class="feature-icon"><i class="ri-brain-2-line"></i></div><h4>Daily challenges</h4><p>Build a consistent problem-solving habit with focused mathematics challenges.</p></article><article class="feature-card"><div class="feature-icon"><i class="ri-line-chart-line"></i></div><h4>Personal progress</h4><p>Track attempts, scores and improvement so you know what to work on next.</p></article><article class="feature-card"><div class="feature-icon"><i class="ri-trophy-line"></i></div><h4>League rankings</h4><p>Earn points, compare your performance and compete with the wider Maths League.</p></article></div></section>
-<section class="cta-section"><p class="eyebrow">YOUR NEXT STEP</p><h3>Turn every problem into progress.</h3><a href="auth.html" class="primary-btn">Create your student account <i class="ri-arrow-right-line"></i></a></section>
-</main></div><script src="js/script.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Maths League — a modern platform for mathematics competition, practice and progress.">
+  <title>Maths League</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Maths League home">
+      <span class="brand-mark">M</span>
+      <span>Maths League</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#how-it-works">How it works</a>
+      <a href="login.html" class="button button-secondary">Log in</a>
+      <a href="register.html" class="button button-primary">Join the League</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <div class="hero-copy">
+        <span class="eyebrow">COMPETE · LEARN · IMPROVE</span>
+        <h1>Turn mathematics into your next <span class="text-accent">win.</span></h1>
+        <p class="hero-lede">Practice with purpose, challenge yourself in timed quizzes, track your progress and climb the Maths League leaderboard.</p>
+        <div class="hero-actions">
+          <a href="register.html" class="button button-primary button-large">Create free account</a>
+          <a href="#how-it-works" class="button button-ghost button-large">See how it works</a>
+        </div>
+      </div>
+      <div class="hero-card" aria-label="Competition preview">
+        <div class="hero-card-top"><span>LIVE PREVIEW</span><span class="status-dot">Competition ready</span></div>
+        <div class="score-panel"><span>Your next challenge</span><strong>10</strong><small>questions</small></div>
+        <div class="stat-row"><div><strong>10 min</strong><span>Duration</span></div><div><strong>100 pts</strong><span>Maximum</span></div><div><strong>🏆</strong><span>Rank up</span></div></div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="section container">
+      <div class="section-heading"><span class="eyebrow">HOW IT WORKS</span><h2>Everything you need to compete.</h2></div>
+      <div class="feature-grid">
+        <article class="feature-card"><span class="feature-number">01</span><h3>Create your profile</h3><p>Register once and keep your competition profile, school and progress in one place.</p></article>
+        <article class="feature-card"><span class="feature-number">02</span><h3>Take the challenge</h3><p>Enter available quizzes, solve problems under pressure and build your mathematical confidence.</p></article>
+        <article class="feature-card"><span class="feature-number">03</span><h3>Track your rise</h3><p>Review results, follow your progress and see how you compare on the leaderboard.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer container"><span>© 2026 Maths League</span><span>Built for ambitious problem solvers.</span></footer>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
