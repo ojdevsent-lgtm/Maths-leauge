@@ -11,6 +11,14 @@ import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs
 const $ = id => document.getElementById(id);
 function message(id, text, type = "error") { const el=$(id); if(!el)return; el.textContent=text; el.className=`auth-message show ${type}`; }
 function setSubmitting(form, disabled) { const button=form?.querySelector("button[type=submit]"); if(button){button.disabled=disabled;button.setAttribute("aria-busy",String(disabled));} }
+function explain(error) {
+  const code = error?.code || "";
+  if (code === "auth/email-already-in-use") return "An account with this email already exists. Log in instead.";
+  if (code === "auth/weak-password") return "Password must be at least 6 characters.";
+  if (code === "auth/invalid-email") return "Enter a valid email address.";
+  if (code === "permission-denied" || code === "firestore/permission-denied") return "Your account was created, but Firebase rejected the student profile. Please try again after the database rules update.";
+  return friendlyError(error);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   const signupPanel=$("signupPanel"), loginPanel=$("loginPanel");
@@ -30,25 +38,34 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const credential = await createUserWithEmailAndPassword(auth, email, password);
       const user = credential.user;
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        role: "student",
+        createdAt: serverTimestamp()
+      });
       await setDoc(doc(db, "students", user.uid), {
-        full_name: fullName,
+        uid: user.uid,
+        fullName,
         email: user.email,
         phone,
         school,
         state,
-        points: 0,
-        quizzes_taken: 0,
+        leaguePoints: 0,
+        quizzesTaken: 0,
+        averageAccuracy: 0,
         status: "active",
-        created_at: serverTimestamp()
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       });
-      // Email verification is intentionally not required. Firebase signs the new
-      // account in immediately, so registration goes straight to the dashboard.
       message("signupMessage","Account created. Redirecting…","success");
-      window.location.replace("dashboard.html");
-    } catch(error){console.error("Signup failed",error);message("signupMessage",friendlyError(error));}
-    finally{setSubmitting(form,false);}
+      window.location.replace("student/dashboard.html");
+    } catch(error){
+      console.error("Signup failed",{code:error?.code,message:error?.message});
+      message("signupMessage",explain(error));
+    } finally { setSubmitting(form,false); }
   });
 
-  $("loginForm")?.addEventListener("submit",async event=>{event.preventDefault();const form=event.currentTarget,email=$("loginEmail")?.value.trim().toLowerCase(),password=$("loginPassword")?.value||"";if(!email||!password)return message("loginMessage","Enter your email and password.");setSubmitting(form,true);try{await signInWithEmailAndPassword(auth,email,password);window.location.replace("dashboard.html");}catch(error){console.error(error);message("loginMessage",friendlyError(error));}finally{setSubmitting(form,false);}});
+  $("loginForm")?.addEventListener("submit",async event=>{event.preventDefault();const form=event.currentTarget,email=$("loginEmail")?.value.trim().toLowerCase(),password=$("loginPassword")?.value||"";if(!email||!password)return message("loginMessage","Enter your email and password.");setSubmitting(form,true);try{await signInWithEmailAndPassword(auth,email,password);window.location.replace("student/dashboard.html");}catch(error){console.error(error);message("loginMessage",friendlyError(error));}finally{setSubmitting(form,false);}});
   $("forgotPassword")?.addEventListener("click",async event=>{event.preventDefault();const email=$("loginEmail")?.value.trim().toLowerCase();if(!email)return message("loginMessage","Enter your email first, then choose Forgot password.");try{await sendPasswordResetEmail(auth,email,{url:`${location.origin}/auth.html`});message("loginMessage","Password reset instructions have been sent if the account exists.","success");}catch(error){message("loginMessage",friendlyError(error));}});
 });
