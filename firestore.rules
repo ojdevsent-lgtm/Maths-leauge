@@ -9,10 +9,11 @@ service cloud.firestore {
     match /students/{uid} {
       allow read: if isSelf(uid) || isAdmin();
       allow create: if isSelf(uid)
+        && request.resource.data.uid == uid
         && request.resource.data.email == request.auth.token.email
-        && request.resource.data.points == 0
+        && request.resource.data.leaguePoints == 0
         && request.resource.data.quizzesTaken == 0
-        && request.resource.data.averageScore == 0
+        && request.resource.data.averageAccuracy == 0
         && request.resource.data.status == 'active';
       allow update: if isAdmin();
       allow delete: if isAdmin();
@@ -20,7 +21,9 @@ service cloud.firestore {
 
     match /users/{uid} {
       allow read: if isSelf(uid) || isAdmin();
-      allow create: if isSelf(uid) && request.resource.data.uid == uid;
+      allow create: if isSelf(uid)
+        && request.resource.data.uid == uid
+        && request.resource.data.role == 'student';
       allow update, delete: if isAdmin();
     }
 
