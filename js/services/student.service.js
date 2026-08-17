@@ -43,7 +43,7 @@ export async function getAttempts(user) {
     ...a,
     quizTitle: titles.get(a.quiz_id) || "Daily Quiz",
     totalQuestions: Number(a.total_questions ?? 0),
-    points: Number(a.score ?? 0)
+    points: Number(a.points ?? a.score ?? 0)
   }));
 }
 
