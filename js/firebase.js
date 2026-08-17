@@ -10,16 +10,16 @@ import {
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-functions.js";
 
-// Firebase web configuration is intentionally public. It identifies the app;
-// authorization is enforced by Firebase Auth, Firestore Rules, and Functions.
-// Replace these placeholders with the configuration from the Firebase console.
+// Firebase web configuration identifies the web app. Authorization is enforced
+// by Firebase Auth, Firestore Rules, and trusted Cloud Functions.
 const firebaseConfig = {
-  apiKey: "REPLACE_WITH_FIREBASE_API_KEY",
-  authDomain: "REPLACE_WITH_FIREBASE_PROJECT.firebaseapp.com",
-  projectId: "REPLACE_WITH_FIREBASE_PROJECT_ID",
-  storageBucket: "REPLACE_WITH_FIREBASE_PROJECT.firebasestorage.app",
-  messagingSenderId: "REPLACE_WITH_MESSAGING_SENDER_ID",
-  appId: "REPLACE_WITH_FIREBASE_APP_ID"
+  apiKey: "AIzaSyBjjAVhUzy9HKuaXfmpKmNsoABd1ZEQ0zk",
+  authDomain: "mltp-9f154.firebaseapp.com",
+  projectId: "mltp-9f154",
+  storageBucket: "mltp-9f154.firebasestorage.app",
+  messagingSenderId: "787010966941",
+  appId: "1:787010966941:web:219c1568588b82a827cb74",
+  measurementId: "G-HRSB1KCQLS"
 };
 
 const app = initializeApp(firebaseConfig);
