@@ -1,11 +1,11 @@
-import { auth, db } from "../firebase.js";
+import { auth, db, functions, httpsCallable } from "../firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { collection, doc, getDoc, getDocs, orderBy, query, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const $ = id => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 const quizId = params.get("id");
-let questions = [], answers = {}, current = 0, startedAt = null, timerId = null, secondsLeft = 0, currentUser = null;
+let questions = [], answers = {}, current = 0, startedAt = null, timerId = null, secondsLeft = 0, currentUser = null, attemptId = null;
 
 function setState(text) { $("quizState").textContent = text; $("quizState").hidden = false; $("quizArena").hidden = true; }
 function renderQuestion() {
@@ -31,11 +31,31 @@ async function loadQuestions(){
   if(!questions.length) throw new Error("no-questions");
   secondsLeft=Number(data.durationSeconds||Number(data.durationMinutes||10)*60);
 }
+async function createAttempt(){
+  const started = new Date().toISOString();
+  const ref = await addDoc(collection(db,"attempts"),{
+    studentId: currentUser.uid,
+    quizId,
+    status: "in_progress",
+    startedAt: started,
+    answers: {},
+    createdAt: serverTimestamp()
+  });
+  attemptId = ref.id;
+  startedAt = started;
+}
 async function submitQuiz(autoSubmitted=false){
   clearInterval(timerId);
-  const payload={studentId:currentUser.uid,quizId,status:"submitted",answers,totalQuestions:questions.length,answeredQuestions:Object.keys(answers).length,startedAt,submittedAt:serverTimestamp(),autoSubmitted};
-  try{await addDoc(collection(db,"attempts"),payload);$("quizArena").hidden=true;$("quizState").hidden=true;$("quizComplete").hidden=false;$("completeMessage").textContent=autoSubmitted?"Time expired. Your answers were submitted.":"Your answers have been recorded.";}
-  catch(error){console.error(error);setState("We couldn't submit your quiz. Check your connection and try again.");}
+  if(!attemptId) { setState("We couldn't start your quiz attempt. Please return to the dashboard and try again."); return; }
+  try{
+    const submit = httpsCallable(functions,"submitQuiz");
+    const result = await submit({quizId,attemptId,answers,autoSubmitted});
+    $("quizArena").hidden=true;$("quizState").hidden=true;$("quizComplete").hidden=false;
+    $("completeMessage").textContent=autoSubmitted?`Time expired. Score: ${result.data.score}/${result.data.possiblePoints}.`:`Quiz submitted. Score: ${result.data.score}/${result.data.possiblePoints}.`;
+  }catch(error){
+    console.error("Quiz submission failed",{code:error?.code,message:error?.message});
+    setState(error?.message||"We couldn't submit your quiz. Please try again.");
+  }
 }
 $("previousButton")?.addEventListener("click",()=>{if(current>0){current--;renderQuestion();}});
 $("nextButton")?.addEventListener("click",()=>{if(current<questions.length-1){current++;renderQuestion();}else submitQuiz(false);});
@@ -43,6 +63,6 @@ $("quitButton")?.addEventListener("click",()=>{if(confirm("Exit this quiz? Your 
 onAuthStateChanged(auth,async user=>{
   if(!user){location.replace("../auth.html");return;}
   currentUser=user;
-  try{await loadQuestions();startedAt=new Date().toISOString();$("quizState").hidden=true;$("quizArena").hidden=false;renderQuestion();renderTimer();timerId=setInterval(()=>{secondsLeft--;renderTimer();if(secondsLeft<=0)submitQuiz(true);},1000);}
+  try{await loadQuestions();await createAttempt();$("quizState").hidden=true;$("quizArena").hidden=false;renderQuestion();renderTimer();timerId=setInterval(()=>{secondsLeft--;renderTimer();if(secondsLeft<=0)submitQuiz(true);},1000);}
   catch(error){console.error(error);setState(error.message==="quiz-not-live"?"This quiz is not currently live.":error.message==="quiz-not-selected"?"Choose a quiz from the dashboard first.":"We couldn't load this quiz. Please try again later.");}
 });
