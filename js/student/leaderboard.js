@@ -1,0 +1,5 @@
+import { auth, db } from "../firebase/config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { collection, getDocs, limit, orderBy, query } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+const root=document.getElementById("leaderboard");
+onAuthStateChanged(auth,async(user)=>{if(!user){location.replace("../login.html");return;}try{const q=query(collection(db,"leaderboard"),orderBy("rank","asc"),limit(50));const snap=await getDocs(q);if(snap.empty){root.innerHTML='<p class="muted">No rankings yet.</p>';return;}root.innerHTML=snap.docs.map(d=>{const s=d.data();return `<div class="result-item"><strong>#${s.rank??"—"} ${s.displayName||"Student"}</strong><span>${Number(s.points||0).toLocaleString()} pts</span></div>`}).join("");}catch(e){console.error(e);root.innerHTML='<p class="muted">Leaderboard is not available yet.</p>';}});
