@@ -13,26 +13,35 @@ Page controllers (js/*page*.js)
    ↓
 Services (js/services/*.service.js)
    ↓
-Supabase client + database functions
+Firebase client SDKs / Cloud Functions
    ↓
-PostgreSQL / Supabase Auth
+Firestore + Firebase Auth
 ```
 
 ### Authentication
 
-`js/core/session.js` is the single entry point for protected student pages. Pages use `requireUser()` on startup and `onSignedOut()` for session invalidation. Do not run database requests inside `onAuthStateChange` callbacks.
+`js/core/session.js` is the single entry point for protected student pages. Pages use `requireUser()` on startup and `onSignedOut()` for session invalidation.
 
 ### Data access
 
-Student-facing pages use `js/services/student.service.js`. This keeps database column names and response normalization out of individual pages.
+Student-facing pages use `js/services/student.service.js`. Quiz and leaderboard operations are isolated behind their service modules. Direct Firestore access from page controllers should be avoided unless there is a documented reason.
 
-When the database schema changes:
+### Trusted backend logic
 
-1. Create a Supabase migration.
-2. Update the affected service.
-3. Update the service tests/checks.
-4. Update pages only if the public data contract changed.
-5. Deploy only after the preview has been verified.
+Cloud Functions are authoritative for operations that affect league state:
+
+- student registration-number creation
+- daily quiz delivery without correct answers
+- quiz scoring and attempt creation
+- points and quiz-total updates
+- leaderboard/rank calculation
+- administrator mutations
+
+The browser is never trusted to calculate authoritative scores or league-impacting values.
+
+### Firestore security
+
+Firestore Rules provide the baseline data boundary. Student-owned profile reads are permitted for the signed-in student; server-owned fields are protected. Quiz attempts are immutable from clients. Administrator operations are handled by callable Cloud Functions after checking `admin_users`.
 
 ### Error handling
 
@@ -40,20 +49,16 @@ Every page must have explicit loading, success, empty, and error states. Network
 
 ### Student vs admin
 
-Student pages must never expose admin navigation. Admin authorization is a backend concern and the admin application should remain a separate protected area.
-
-### Quiz integrity
-
-The browser is not trusted to calculate authoritative scores. Final scoring and league-impacting values must be calculated by trusted server/database logic.
+Student pages must never expose admin navigation. Admin authorization is a backend concern and the admin application remains a separate protected area.
 
 ## Safe change workflow
 
-1. Inspect the relevant service and database contract before editing.
+1. Inspect the relevant service and Firebase data contract before editing.
 2. Create a feature branch from `main`.
 3. Make the smallest coherent change.
 4. Run static/syntax checks and test the affected flow.
-5. Deploy to a Netlify preview.
-6. Test authentication, loading, error, and empty states.
+5. Deploy to a Firebase/Netlify preview when applicable.
+6. Test authentication, loading, error, empty, and unauthorized states.
 7. Merge only after verification.
 
 Never make unrelated changes on `main` while implementing a feature.
