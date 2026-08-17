@@ -13,13 +13,13 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
 // Firebase web configuration identifies the web app. Authorization is enforced
 // by Firebase Auth, Firestore Rules, and trusted Cloud Functions.
 const firebaseConfig = {
-  apiKey: "AIzaSyBjjAVhUzy9HKuaXfmpKmNsoABd1ZEQ0zk",
-  authDomain: "mltp-9f154.firebaseapp.com",
-  projectId: "mltp-9f154",
-  storageBucket: "mltp-9f154.firebasestorage.app",
-  messagingSenderId: "787010966941",
-  appId: "1:787010966941:web:219c1568588b82a827cb74",
-  measurementId: "G-HRSB1KCQLS"
+  apiKey: "AIzaSyBdYsOfSibP0OF_r2zYuHnJokwijfjnivU",
+  authDomain: "maths-league.firebaseapp.com",
+  projectId: "maths-league",
+  storageBucket: "maths-league.firebasestorage.app",
+  messagingSenderId: "847559537753",
+  appId: "1:847559537753:web:6dc7dfdead207428deed48",
+  measurementId: "G-2Z467KX0SQ"
 };
 
 const app = initializeApp(firebaseConfig);
