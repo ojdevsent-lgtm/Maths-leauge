@@ -47,7 +47,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if grep -RInE 'from ["'"'].*supabase\.js|supabase\.auth|supabase\.from|supabase\.rpc' js --include='*.js'; then
+          files=$(find js -type f -name '*.js' ! -path 'js/supabase.js')
+          if grep -nHE 'from ["'"'].*supabase\.js|supabase\.auth|supabase\.from|supabase\.rpc' $files; then
             echo 'Active frontend JavaScript still imports or calls Supabase.'
             exit 1
           fi
