@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Maths League Quiz Arena"><title>Quiz — Maths League</title>
+  <link rel="stylesheet" href="../css/variables.css"><link rel="stylesheet" href="../css/global.css"><link rel="stylesheet" href="../css/components.css"><link rel="stylesheet" href="../css/student.css"><link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+  <main class="quiz-page">
+    <header class="quiz-header"><a class="brand" href="dashboard.html">Maths League</a><button id="quitButton" class="button button-secondary button-small" type="button">Exit</button></header>
+    <section id="quizState" class="quiz-state" aria-live="polite">Loading quiz…</section>
+    <section id="quizArena" hidden>
+      <div class="quiz-top"><div><span class="eyebrow">QUIZ ARENA</span><h1 id="quizTitle">Maths League Trivia</h1></div><div id="timer" class="quiz-timer" aria-label="Time remaining">10:00</div></div>
+      <div class="quiz-progress"><span id="questionCounter">Question 1 of 10</span><div class="progress-track"><span id="progressBar"></span></div></div>
+      <article class="question-card"><p id="questionText" class="question-text"></p><div id="options" class="options" role="radiogroup" aria-label="Answer choices"></div></article>
+      <div class="quiz-actions"><button id="previousButton" class="button button-secondary" type="button">Previous</button><button id="nextButton" class="button button-primary" type="button">Next</button></div>
+    </section>
+    <section id="quizComplete" class="quiz-complete" hidden><span class="success-icon">✓</span><h1>Quiz submitted</h1><p id="completeMessage">Your attempt has been recorded.</p><a class="button button-primary" href="dashboard.html">Back to dashboard</a></section>
+  </main>
+  <script type="module" src="../js/student/quiz.js"></script>
+</body>
+</html>
