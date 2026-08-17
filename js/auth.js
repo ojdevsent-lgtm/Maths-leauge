@@ -6,7 +6,7 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail
 } from "./firebase.js";
-import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { doc, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const $ = id => document.getElementById(id);
 function message(id, text, type = "error") { const el=$(id); if(!el)return; el.textContent=text; el.className=`auth-message show ${type}`; }
@@ -16,7 +16,7 @@ function explain(error) {
   if (code === "auth/email-already-in-use") return "An account with this email already exists. Log in instead.";
   if (code === "auth/weak-password") return "Password must be at least 6 characters.";
   if (code === "auth/invalid-email") return "Enter a valid email address.";
-  if (code === "permission-denied" || code === "firestore/permission-denied") return "Your account was created, but Firebase rejected the student profile. Please try again after the database rules update.";
+  if (code === "permission-denied" || code === "firestore/permission-denied") return "Firebase signed you in, but Firestore rejected the profile. Deploy the current Firestore rules, then try again.";
   return friendlyError(error);
 }
 
@@ -38,13 +38,14 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const credential = await createUserWithEmailAndPassword(auth, email, password);
       const user = credential.user;
-      await setDoc(doc(db, "users", user.uid), {
+      const batch = writeBatch(db);
+      batch.set(doc(db, "users", user.uid), {
         uid: user.uid,
         email: user.email,
         role: "student",
         createdAt: serverTimestamp()
       });
-      await setDoc(doc(db, "students", user.uid), {
+      batch.set(doc(db, "students", user.uid), {
         uid: user.uid,
         fullName,
         email: user.email,
@@ -58,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
+      await batch.commit();
       message("signupMessage","Account created. Redirecting…","success");
       window.location.replace("student/dashboard.html");
     } catch(error){
