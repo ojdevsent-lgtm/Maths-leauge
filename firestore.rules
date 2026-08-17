@@ -16,8 +16,16 @@ service cloud.firestore {
 
     match /students/{uid} {
       allow read: if isSelf(uid) || isAdmin();
-      allow create: if false;
-      // Registration, points, quiz totals, status, and registration numbers are server-owned.
+      allow create: if isSelf(uid)
+        && request.resource.data.full_name is string
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.phone is string
+        && request.resource.data.school is string
+        && request.resource.data.state is string
+        && request.resource.data.points == 0
+        && request.resource.data.quizzes_taken == 0
+        && request.resource.data.status == "active";
+      // Student-owned profile fields are intentionally immutable from the client after signup.
       allow update: if isAdmin();
       allow delete: if false;
     }
@@ -28,7 +36,6 @@ service cloud.firestore {
     }
 
     match /quiz_questions/{questionId} {
-      // Correct answers must never be exposed to student clients.
       allow read: if isAdmin();
       allow write: if isAdmin();
     }
