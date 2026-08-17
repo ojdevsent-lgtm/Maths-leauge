@@ -1,18 +1,18 @@
 import {
   auth,
   functions,
-  db,
   friendlyError,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   httpsCallable
 } from "./firebase.js";
-import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const $ = id => document.getElementById(id);
 function message(id, text, type = "error") { const el=$(id); if(!el)return; el.textContent=text; el.className=`auth-message show ${type}`; }
 function setSubmitting(form, disabled) { const button=form?.querySelector("button[type=submit]"); if(button){button.disabled=disabled;button.setAttribute("aria-busy",String(disabled));} }
+
+const registerStudent = httpsCallable(functions, "registerStudent");
 
 document.addEventListener("DOMContentLoaded", () => {
   const signupPanel=$("signupPanel"), loginPanel=$("loginPanel");
@@ -31,18 +31,11 @@ document.addEventListener("DOMContentLoaded", () => {
     setSubmitting(form,true); message("signupMessage","Creating your account…","success");
     try {
       const credential = await createUserWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, "students", credential.user.uid), {
-        full_name: fullName,
-        email: credential.user.email,
-        phone,
-        school,
-        state,
-        points: 0,
-        quizzes_taken: 0,
-        status: "active",
-        created_at: serverTimestamp()
-      });
-      message("signupMessage","Account created. Redirecting…","success"); window.location.replace("dashboard.html");
+      await registerStudent({ fullName, phone, school, state, email: credential.user.email });
+      // Email verification is intentionally not required. Firebase signs the new
+      // account in immediately, so registration goes straight to the dashboard.
+      message("signupMessage","Account created. Redirecting…","success");
+      window.location.replace("dashboard.html");
     } catch(error){console.error("Signup failed",error);message("signupMessage",friendlyError(error));}
     finally{setSubmitting(form,false);}
   });
