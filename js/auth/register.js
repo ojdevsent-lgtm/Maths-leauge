@@ -12,7 +12,7 @@ function friendlyError(error) {
   if (code === "auth/invalid-email") return "Please enter a valid email address.";
   if (code === "auth/weak-password") return "Your password is too weak. Use at least 6 characters.";
   if (code === "auth/operation-not-allowed") return "Email/password sign-in is not enabled in Firebase Authentication.";
-  if (code === "permission-denied" || code === "firestore/permission-denied") return "Your account was created, but Firebase blocked the student profile. Check the Firestore rules before retrying.";
+  if (code === "permission-denied" || code === "firestore/permission-denied") return "Your account was created, but Firebase blocked the student profile. The profile fields and Firestore rules must match.";
   if (code === "auth/network-request-failed") return "Firebase could not be reached. Check your internet connection and try again.";
   return `Registration failed (${code || "unknown error"}). Please try again.`;
 }
@@ -36,13 +36,14 @@ form?.addEventListener("submit", async (event) => {
     });
 
     await setDoc(doc(db, "students", uid), {
+      uid,
       fullName: form.fullName.value.trim(),
       email,
       school: form.school.value.trim(),
       state: form.state.value.trim(),
-      points: 0,
+      leaguePoints: 0,
       quizzesTaken: 0,
-      averageScore: 0,
+      averageAccuracy: 0,
       status: "active",
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
