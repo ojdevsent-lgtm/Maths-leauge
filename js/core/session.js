@@ -1,4 +1,4 @@
-import { supabase, friendlyError } from "../supabase.js";
+import { auth, friendlyError, onAuthStateChanged, firebaseSignOut } from "../firebase.js";
 
 const AUTH_TIMEOUT_MS = 10000;
 
@@ -10,25 +10,30 @@ function withTimeout(promise, ms = AUTH_TIMEOUT_MS) {
 }
 
 export async function requireUser({ redirect = "auth.html" } = {}) {
-  const { data, error } = await withTimeout(supabase.auth.getSession());
-  if (error) throw error;
-  const user = data?.session?.user ?? null;
-  if (!user) {
-    location.replace(redirect);
-    return null;
-  }
-  return user;
+  const user = auth.currentUser;
+  if (user) return user;
+
+  return withTimeout(new Promise(resolve => {
+    const unsubscribe = onAuthStateChanged(auth, nextUser => {
+      unsubscribe();
+      if (!nextUser) {
+        location.replace(redirect);
+        resolve(null);
+        return;
+      }
+      resolve(nextUser);
+    });
+  }));
 }
 
 export function onSignedOut() {
-  return supabase.auth.onAuthStateChange((event) => {
-    if (event === "SIGNED_OUT") location.replace("auth.html");
+  return onAuthStateChanged(auth, user => {
+    if (!user) location.replace("auth.html");
   });
 }
 
 export async function signOut() {
-  const { error } = await withTimeout(supabase.auth.signOut());
-  if (error) throw error;
+  await withTimeout(firebaseSignOut(auth));
 }
 
 export function displayError(error, fallback) {
