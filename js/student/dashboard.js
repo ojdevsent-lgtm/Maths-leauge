@@ -1,12 +1,12 @@
-import { auth, db } from "../firebase/config.js";
-import { onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { auth, db, firebaseSignOut } from "../firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const $ = id => document.getElementById(id);
 const message = $("dashboardMessage");
 const content = $("dashboardContent");
 
-$("logoutButton")?.addEventListener("click", async () => { await signOut(auth); window.location.href = "../auth.html"; });
+$("logoutButton")?.addEventListener("click", async () => { await firebaseSignOut(auth); window.location.replace("../auth.html"); });
 
 function showError(text) { message.textContent = text; message.classList.add("error"); message.hidden = false; content.hidden = true; }
 
@@ -15,8 +15,6 @@ async function ensureStudentProfile(user) {
   const snap = await getDoc(ref);
   if (snap.exists()) return snap.data();
 
-  // Recovery path for accounts created before/while the profile write failed.
-  // Firestore rules still require the authenticated UID and zeroed competition fields.
   const profile = {
     uid: user.uid,
     fullName: user.displayName || (user.email ? user.email.split("@")[0] : "Student"),
@@ -52,10 +50,10 @@ async function loadDashboard(user) {
   try {
     const quizSnap = await getDocs(query(collection(db, "quizzes"), where("status", "==", "live"), limit(1)));
     if (!quizSnap.empty) {
-      const quiz = quizSnap.docs[0]; const data = quiz.data();
+      const quizSnapDoc = quizSnap.docs[0]; const data = quizSnapDoc.data();
       $("challengeTitle").textContent = data.title || "Live challenge";
       $("challengeMeta").textContent = `${data.questionCount || 0} questions · ${Math.round(Number(data.durationSeconds || 0) / 60) || 0} minutes`;
-      const button = $("challengeButton"); button.href = `quiz.html?id=${encodeURIComponent(quiz.id)}`; button.hidden = false;
+      const button = $("challengeButton"); button.href = `quiz.html?id=${encodeURIComponent(quizSnapDoc.id)}`; button.hidden = false;
     }
   } catch (error) { console.warn("Live quiz lookup failed", error); }
 
@@ -79,6 +77,6 @@ onAuthStateChanged(auth, async user => {
   try { await loadDashboard(user); }
   catch (error) {
     console.error("Dashboard load failed", error);
-    showError(error.message === "student-profile-create-failed" ? "Firebase signed you in, but Firestore rejected the student profile. Check the deployed Firestore rules." : "We couldn't load your dashboard. Please try again.");
+    showError(error.code === "permission-denied" || error.code === "permission-denied" ? "Firebase signed you in, but Firestore rejected the student profile. Deploy the current Firestore rules before testing again." : "We couldn't load your dashboard. Please try again.");
   }
 });
