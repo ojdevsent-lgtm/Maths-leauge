@@ -4,14 +4,29 @@ import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs
 
 const form = document.getElementById("registerForm");
 const message = document.getElementById("authMessage");
+const submitButton = form?.querySelector("button[type='submit']");
 
-form.addEventListener("submit", async (event) => {
+function friendlyError(error) {
+  const code = error?.code || "";
+  if (code === "auth/email-already-in-use") return "An account with this email already exists. Try signing in instead.";
+  if (code === "auth/invalid-email") return "Please enter a valid email address.";
+  if (code === "auth/weak-password") return "Your password is too weak. Use at least 6 characters.";
+  if (code === "auth/operation-not-allowed") return "Email/password sign-in is not enabled in Firebase Authentication.";
+  if (code === "permission-denied" || code === "firestore/permission-denied") return "Your account was created, but Firebase blocked the student profile. Check the Firestore rules before retrying.";
+  if (code === "auth/network-request-failed") return "Firebase could not be reached. Check your internet connection and try again.";
+  return `Registration failed (${code || "unknown error"}). Please try again.`;
+}
+
+form?.addEventListener("submit", async (event) => {
   event.preventDefault();
   message.className = "form-message";
   message.textContent = "Creating your account…";
+  if (submitButton) submitButton.disabled = true;
+
   try {
     const credential = await createUserWithEmailAndPassword(auth, form.email.value.trim(), form.password.value);
     const { uid, email } = credential.user;
+
     await setDoc(doc(db, "users", uid), {
       uid,
       email,
@@ -19,6 +34,7 @@ form.addEventListener("submit", async (event) => {
       createdAt: serverTimestamp(),
       lastLoginAt: serverTimestamp()
     });
+
     await setDoc(doc(db, "students", uid), {
       fullName: form.fullName.value.trim(),
       email,
@@ -31,9 +47,13 @@ form.addEventListener("submit", async (event) => {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
+
+    message.className = "form-message success";
+    message.textContent = "Account created. Opening your dashboard…";
     window.location.href = "student/dashboard.html";
   } catch (error) {
-    console.error(error);
-    message.textContent = error.code === "auth/email-already-in-use" ? "An account with this email already exists." : "We couldn't create your account. Please try again.";
+    console.error("Maths League registration failed", { code: error?.code, message: error?.message });
+    message.textContent = friendlyError(error);
+    if (submitButton) submitButton.disabled = false;
   }
 });
