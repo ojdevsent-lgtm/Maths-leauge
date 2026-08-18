@@ -17,7 +17,6 @@ service cloud.firestore {
         && request.resource.data.quizzesTaken == 0
         && request.resource.data.averageAccuracy == 0
         && request.resource.data.status == 'active';
-      // Students may update only their own competition statistics/profile fields.
       allow update: if isAdmin() || (isSelf(uid)
         && request.resource.data.uid == resource.data.uid
         && request.resource.data.email == resource.data.email
@@ -47,22 +46,35 @@ service cloud.firestore {
       }
     }
 
+    // One immutable attempt is allowed per student for each quiz.
+    // The deterministic document ID is {studentUid}_{quizId}.
     match /attempts/{attemptId} {
       allow read: if isAdmin() || (signedIn() && resource.data.studentId == request.auth.uid);
+
       allow create: if signedIn()
+        && attemptId == request.auth.uid + '_' + request.resource.data.quizId
+        && !exists(/databases/$(database)/documents/attempts/$(attemptId))
         && request.resource.data.studentId == request.auth.uid
-        && request.resource.data.status == 'in_progress'
         && request.resource.data.quizId is string
         && request.resource.data.answers is map
-        && request.resource.data.startedAt is string
-        && request.resource.data.keys().hasOnly(['studentId','quizId','status','answers','startedAt','createdAt']);
-      allow update: if isAdmin() || (signedIn()
-        && resource.data.studentId == request.auth.uid
-        && request.resource.data.studentId == resource.data.studentId
-        && request.resource.data.quizId == resource.data.quizId
-        && request.resource.data.answers is map
-        && request.resource.data.status in ['in_progress', 'submitted']);
-      allow delete: if isAdmin();
+        && request.resource.data.status == 'submitted'
+        && request.resource.data.score is number
+        && request.resource.data.accuracy is number
+        && request.resource.data.leaguePointsAwarded is number
+        && request.resource.data.keys().hasOnly([
+          'studentId',
+          'quizId',
+          'answers',
+          'score',
+          'accuracy',
+          'leaguePointsAwarded',
+          'status',
+          'submittedAt'
+        ]);
+
+      // Submitted attempts are immutable for students.
+      // Admins can correct/manage attempts when necessary.
+      allow update, delete: if isAdmin();
     }
 
     match /leaderboard/{uid} {
