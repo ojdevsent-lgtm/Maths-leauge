@@ -1,17 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  signOut as firebaseSignOut
-} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut as firebaseSignOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-functions.js";
 
-// Firebase web configuration identifies the web app. Authorization is enforced
-// by Firebase Auth, Firestore Rules, and trusted Cloud Functions.
 const firebaseConfig = {
   apiKey: "AIzaSyBdYsOfSibP0OF_r2zYuHnJokwijfjnivU",
   authDomain: "maths-league.firebaseapp.com",
@@ -25,13 +15,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const functions = getFunctions(app, "us-central1");
+export { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, firebaseSignOut };
 
-export { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, firebaseSignOut, httpsCallable };
-
-export function currentUser() {
-  return auth.currentUser;
-}
+export function currentUser() { return auth.currentUser; }
 
 export function watchAuth(callback) {
   let lastUserId;
@@ -43,13 +29,7 @@ export function watchAuth(callback) {
     clearTimeout(timer);
     timer = setTimeout(() => callback(user), 0);
   });
-
-  return {
-    unsubscribe() {
-      clearTimeout(timer);
-      unsubscribe();
-    }
-  };
+  return { unsubscribe() { clearTimeout(timer); unsubscribe(); } };
 }
 
 export function friendlyError(error) {
