@@ -1,33 +1,16 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() {
-      return request.auth != null;
-    }
-
-    function isSelf(uid) {
-      return signedIn() && request.auth.uid == uid;
-    }
-
+    function signedIn() { return request.auth != null; }
+    function isSelf(uid) { return signedIn() && request.auth.uid == uid; }
     function isAdmin() {
-      return signedIn() &&
-        exists(/databases/$(database)/documents/admin_users/$(request.auth.uid));
+      return signedIn() && exists(/databases/$(database)/documents/admin_users/$(request.auth.uid));
     }
 
     match /students/{uid} {
       allow read: if isSelf(uid) || isAdmin();
-      allow create: if isSelf(uid)
-        && request.resource.data.full_name is string
-        && request.resource.data.email == request.auth.token.email
-        && request.resource.data.phone is string
-        && request.resource.data.school is string
-        && request.resource.data.state is string
-        && request.resource.data.points == 0
-        && request.resource.data.quizzes_taken == 0
-        && request.resource.data.status == "active";
-      // Student-owned profile fields are intentionally immutable from the client after signup.
+      allow create, delete: if false;
       allow update: if isAdmin();
-      allow delete: if false;
     }
 
     match /quiz_configs/{quizId} {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard | ML Trivia</title>
+<title>Admin Dashboard | Maths League</title>
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/admin.css">
@@ -14,7 +14,7 @@
   <div>
     <p class="eyebrow">MATHS LEAGUE</p>
     <h1>Admin Dashboard</h1>
-    <p>Manage students, quizzes, rankings and announcements.</p>
+    <p>Restricted to authorized administrators.</p>
   </div>
   <div class="admin-actions">
     <a href="dashboard.html" class="admin-link"><i class="ri-arrow-left-line"></i> Student app</a>
@@ -24,59 +24,35 @@
 
 <div id="adminMessage" class="admin-message"></div>
 
-<section class="admin-stats">
+<section class="admin-stats" aria-label="League statistics">
   <article><i class="ri-group-line"></i><div><span>Students</span><strong id="statStudents">0</strong></div></article>
   <article><i class="ri-file-list-3-line"></i><div><span>Quiz attempts</span><strong id="statAttempts">0</strong></div></article>
   <article><i class="ri-star-line"></i><div><span>Points awarded</span><strong id="statPoints">0</strong></div></article>
   <article><i class="ri-megaphone-line"></i><div><span>Active announcements</span><strong id="statAnnouncements">0</strong></div></article>
 </section>
 
-<nav class="admin-tabs" aria-label="Admin sections">
-  <button class="admin-tab active" data-tab="overview" type="button">Overview</button>
-  <button class="admin-tab" data-tab="students" type="button">Students</button>
-  <button class="admin-tab" data-tab="quiz" type="button">Daily Quiz</button>
-  <button class="admin-tab" data-tab="announcements" type="button">Announcements</button>
-</nav>
-
-<section class="admin-panel active" data-panel="overview">
+<section class="admin-panel active">
   <div class="panel-heading">
     <div><p class="eyebrow">RECENT ACTIVITY</p><h2>Latest quiz attempts</h2></div>
-    <button id="rebuildStats" class="admin-link" type="button"><i class="ri-refresh-line"></i> Rebuild statistics</button>
   </div>
   <div id="recentAttempts" class="admin-table-wrap"></div>
 </section>
 
-<section class="admin-panel" data-panel="students">
+<section class="admin-panel active">
   <div class="panel-heading">
     <div><p class="eyebrow">STUDENT MANAGEMENT</p><h2>Registered students</h2></div>
-    <input id="studentSearch" class="admin-search" type="search" placeholder="Search students...">
+    <input id="studentSearch" class="admin-search" type="search" placeholder="Search students..." autocomplete="off">
   </div>
   <div id="studentsTable" class="admin-table-wrap"></div>
 </section>
 
-<section class="admin-panel" data-panel="quiz">
+<section class="admin-panel active">
   <div class="panel-heading">
-    <div><p class="eyebrow">QUIZ MANAGEMENT</p><h2>Daily Quiz</h2></div>
-    <label class="switch-label"><input id="quizActive" type="checkbox" checked><span>Available</span></label>
+    <div><p class="eyebrow">ANNOUNCEMENTS</p><h2>Published announcements</h2></div>
   </div>
-  <label class="field-label">Quiz title<input id="quizTitle" class="admin-input" type="text" maxlength="120"></label>
-  <div id="questionEditor" class="question-editor"></div>
-  <div class="quiz-editor-actions">
-    <button id="addQuestion" class="admin-link" type="button"><i class="ri-add-line"></i> Add question</button>
-    <button id="saveQuiz" class="primary-button" type="button"><i class="ri-save-line"></i> Save Daily Quiz</button>
-  </div>
-</section>
-
-<section class="admin-panel" data-panel="announcements">
-  <div class="panel-heading"><div><p class="eyebrow">COMMUNICATION</p><h2>Announcements</h2></div></div>
-  <form id="announcementForm" class="announcement-form">
-    <input id="announcementTitle" class="admin-input" maxlength="120" placeholder="Announcement title" required>
-    <textarea id="announcementBody" class="admin-input" maxlength="1000" rows="4" placeholder="Write your announcement..." required></textarea>
-    <button class="primary-button" type="submit"><i class="ri-megaphone-line"></i> Publish announcement</button>
-  </form>
   <div id="announcementsList" class="announcement-list"></div>
 </section>
-</main>
+
 <script type="module" src="js/admin.js"></script>
 </body>
 </html>
