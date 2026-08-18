@@ -1,6 +1,6 @@
 import { auth, db } from "../firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-import { collection, doc, getDoc, getDocs, query, where, limit, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { collection, doc, getDoc, getDocs, query, where, limit, orderBy, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search),quizId=params.get("id");let questions=[],answers={},current=0,timerId=null,secondsLeft=0,attemptId=null;
 function setState(text){$("quizState").textContent=text;$("quizState").hidden=false;$("quizArena").hidden=true;}
 function renderQuestion(){const q=questions[current];$("questionCounter").textContent=`Question ${current+1} of ${questions.length}`;$("progressBar").style.width=`${((current+1)/questions.length)*100}%`;$("questionText").textContent=q.text;$("options").innerHTML=q.options.map((o,i)=>`<button type="button" class="option${answers[q.id]===i?" selected":""}" data-index="${i}"><span class="option-index">${String.fromCharCode(65+i)}</span><span>${o}</span></button>`).join("");document.querySelectorAll(".option").forEach(b=>b.addEventListener("click",()=>{answers[q.id]=Number(b.dataset.index);renderQuestion();}));$("previousButton").disabled=current===0;$("nextButton").textContent=current===questions.length-1?"Submit quiz":"Next";}
