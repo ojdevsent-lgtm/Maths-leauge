@@ -34,9 +34,12 @@ function displayQuestion() {
   questionCounter.textContent = `${currentQuestion + 1} / ${questions.length}`;
   progressBar.style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
   nextButton.disabled = answers[currentQuestion] == null;
-  nextButton.innerHTML = currentQuestion === questions.length - 1 ? 'Submit Quiz <i class="ri-check-line"></i>' : 'Next Question <i class="ri-arrow-right-line"></i>';
+  nextButton.innerHTML = currentQuestion === questions.length - 1
+    ? 'Submit Quiz <i class="ri-check-line"></i>'
+    : 'Next Question <i class="ri-arrow-right-line"></i>';
 
-  (question.answers || []).forEach((answer, index) => {
+  const options = Array.isArray(question.options) ? question.options : [];
+  options.forEach((answer, index) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "answer-button";
@@ -62,7 +65,7 @@ async function start() {
       nextButton.disabled = true;
       return;
     }
-    questions = data.questions || [];
+    questions = Array.isArray(data.questions) ? data.questions : [];
     answers = new Array(questions.length).fill(null);
     if (!questions.length) throw new Error("No quiz is available today.");
     displayQuestion();
@@ -85,7 +88,11 @@ nextButton?.addEventListener("click", async () => {
   nextButton.disabled = true;
   showMessage("Submitting your answers…");
   try {
-    const result = await submitDailyQuiz(answers);
+    const payload = questions.map((question, index) => ({
+      questionId: question.id,
+      answer: answers[index]
+    }));
+    const result = await submitDailyQuiz(payload);
     localStorage.setItem("mlTriviaLastResult", JSON.stringify(result));
     location.href = "quiz-result.html";
   } catch (error) {
@@ -96,8 +103,8 @@ nextButton?.addEventListener("click", async () => {
   }
 });
 
-$("exitQuiz")?.addEventListener("click", () => {
-  if (!submitting) location.href = "quiz.html";
+$("exitQuiz")?.addEventListener("click", event => {
+  if (submitting) event.preventDefault();
 });
 
 start();
