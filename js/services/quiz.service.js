@@ -7,9 +7,8 @@ import {
   limit,
   query,
   serverTimestamp,
-  updateDoc,
   where,
-  addDoc
+  writeBatch
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const TIMEOUT_MS = 12000;
@@ -18,7 +17,7 @@ function withTimeout(promise, ms = TIMEOUT_MS) {
   return Promise.race([
     promise,
     new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("The quiz service timed out. Please try again.")), ms)
+      setTimeout(() => reject(new Error("The quiz service timed out. Please try again.")), ms
     )
   ]);
 }
@@ -28,31 +27,31 @@ function withTimeout(promise, ms = TIMEOUT_MS) {
 // existing question documents remain unchanged.
 const CURRENT_ANSWER_KEY = [1, 1, 1, 0, 0, 0, 0, 2, 1, 3];
 
-export async function getDailyQuiz() {
-  const user = auth.currentUser;
-  if (!user) throw new Error("Please sign in before starting the quiz.");
-
+async function getLiveQuiz() {
   const quizSnap = await withTimeout(getDocs(query(
     collection(db, "quizzes"),
     where("status", "==", "live"),
     limit(1)
   )));
 
-  if (quizSnap.empty) {
-    return { completed: false, questions: [] };
-  }
+  if (quizSnap.empty) return null;
 
   const quizDoc = quizSnap.docs[0];
-  const quiz = { id: quizDoc.id, ...quizDoc.data() };
+  return { id: quizDoc.id, ...quizDoc.data() };
+}
 
-  const attemptsSnap = await withTimeout(getDocs(query(
-    collection(db, "attempts"),
-    where("studentId", "==", user.uid),
-    where("quizId", "==", quiz.id),
-    limit(1)
-  )));
+export async function getDailyQuiz() {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Please sign in before starting the quiz.");
 
-  if (!attemptsSnap.empty) {
+  const quiz = await getLiveQuiz();
+  if (!quiz) return { completed: false, questions: [] };
+
+  // One attempt is permanently associated with this exact student + quiz.
+  const attemptId = `${user.uid}_${quiz.id}`;
+  const attemptSnap = await withTimeout(getDoc(doc(db, "attempts", attemptId)));
+
+  if (attemptSnap.exists()) {
     return { completed: true, questions: [] };
   }
 
@@ -87,26 +86,18 @@ export async function submitDailyQuiz(answers) {
     throw new Error("Please answer all quiz questions before submitting.");
   }
 
-  const quizSnap = await withTimeout(getDocs(query(
-    collection(db, "quizzes"),
-    where("status", "==", "live"),
-    limit(1)
-  )));
+  const quiz = await getLiveQuiz();
+  if (!quiz) throw new Error("No live quiz is available.");
 
-  if (quizSnap.empty) throw new Error("No live quiz is available.");
+  // Deterministic attempt ID makes one submission slot per student per quiz.
+  // Firestore rules also reject any second client-created attempt at this ID.
+  const attemptId = `${user.uid}_${quiz.id}`;
+  const attemptRef = doc(db, "attempts", attemptId);
+  const existing = await withTimeout(getDoc(attemptRef));
 
-  const quizDoc = quizSnap.docs[0];
-  const quizId = quizDoc.id;
-  const quiz = quizDoc.data();
-
-  const existing = await withTimeout(getDocs(query(
-    collection(db, "attempts"),
-    where("studentId", "==", user.uid),
-    where("quizId", "==", quizId),
-    limit(1)
-  )));
-
-  if (!existing.empty) throw new Error("You have already completed this quiz.");
+  if (existing.exists()) {
+    throw new Error("You have already completed this quiz.");
+  }
 
   const correct = answers.reduce(
     (total, answer, index) => total + (Number(answer) === CURRENT_ANSWER_KEY[index] ? 1 : 0),
@@ -116,17 +107,6 @@ export async function submitDailyQuiz(answers) {
   const accuracy = Math.round((correct / totalQuestions) * 100);
   const pointsPerCorrect = Number(quiz.pointsPerCorrect ?? 1);
   const points = correct * pointsPerCorrect;
-
-  const attemptRef = await withTimeout(addDoc(collection(db, "attempts"), {
-    studentId: user.uid,
-    quizId,
-    answers: Object.fromEntries(answers.map((answer, index) => [String(index), Number(answer)])),
-    score: correct,
-    accuracy,
-    leaguePointsAwarded: points,
-    status: "submitted",
-    submittedAt: serverTimestamp()
-  }));
 
   const studentRef = doc(db, "students", user.uid);
   const studentSnap = await withTimeout(getDoc(studentRef));
@@ -140,29 +120,41 @@ export async function submitDailyQuiz(answers) {
     ((previousAccuracy * (quizzesTaken - 1)) + accuracy) / quizzesTaken
   );
 
-  await withTimeout(updateDoc(studentRef, {
+  const leaderboardRef = doc(db, "leaderboard", user.uid);
+  const batch = writeBatch(db);
+
+  batch.set(attemptRef, {
+    studentId: user.uid,
+    quizId: quiz.id,
+    answers: Object.fromEntries(answers.map((answer, index) => [String(index), Number(answer)])),
+    score: correct,
+    accuracy,
+    leaguePointsAwarded: points,
+    status: "submitted",
+    submittedAt: serverTimestamp()
+  });
+
+  batch.update(studentRef, {
     quizzesTaken,
     leaguePoints,
     averageAccuracy,
     updatedAt: serverTimestamp()
-  }));
+  });
 
-  const leaderboardRef = doc(db, "leaderboard", user.uid);
-  const leaderboardStudent = student;
-  await withTimeout(import("https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js").then(async ({ setDoc }) => {
-    await setDoc(leaderboardRef, {
-      studentId: user.uid,
-      displayName: leaderboardStudent.fullName ?? "Student",
-      school: leaderboardStudent.school ?? "",
-      leaguePoints,
-      quizzesTaken,
-      averageAccuracy,
-      updatedAt: serverTimestamp()
-    }, { merge: true });
-  }));
+  batch.set(leaderboardRef, {
+    studentId: user.uid,
+    displayName: student.fullName ?? "Student",
+    school: student.school ?? "",
+    leaguePoints,
+    quizzesTaken,
+    averageAccuracy,
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+
+  await withTimeout(batch.commit());
 
   return {
-    attemptId: attemptRef.id,
+    attemptId,
     score: correct,
     totalQuestions,
     points,
