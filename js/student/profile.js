@@ -1,5 +1,22 @@
-import { auth, db } from "../firebase/config.js";
+import { auth, db } from "../firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-const message=document.getElementById("message");
-onAuthStateChanged(auth,async(user)=>{if(!user){location.replace("../login.html");return;}try{const snap=await getDoc(doc(db,"students",user.uid));if(!snap.exists())throw new Error("profile missing");const s=snap.data();document.getElementById("name").textContent=s.fullName||"Student";document.getElementById("email").textContent=s.email||user.email||"—";document.getElementById("school").textContent=s.school||"—";document.getElementById("state").textContent=s.state||"—";document.getElementById("status").textContent=s.status||"active";}catch(e){console.error(e);message.textContent="We couldn't load your profile.";}});
+
+const message = document.getElementById("message");
+
+onAuthStateChanged(auth, async user => {
+  if (!user) { location.replace("../login.html"); return; }
+  try {
+    const snap = await getDoc(doc(db, "students", user.uid));
+    if (!snap.exists()) throw new Error("profile-missing");
+    const s = snap.data();
+    document.getElementById("name").textContent = s.fullName || "Student";
+    document.getElementById("email").textContent = s.email || user.email || "—";
+    document.getElementById("school").textContent = s.school || "—";
+    document.getElementById("state").textContent = s.state || "—";
+    document.getElementById("status").textContent = s.status || "active";
+  } catch (error) {
+    console.error("Profile load failed", error);
+    message.textContent = "We couldn't load your profile. Please return to the dashboard and try again.";
+  }
+});
