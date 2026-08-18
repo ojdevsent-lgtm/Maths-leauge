@@ -1,6 +1,6 @@
-import { auth, db, firebaseSignOut } from "../firebase.js";
+import { auth, db, functions, firebaseSignOut, httpsCallable } from "../firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 const $ = id => document.getElementById(id);
 const message = $("dashboardMessage");
@@ -15,21 +15,18 @@ async function ensureStudentProfile(user) {
   const snap = await getDoc(ref);
   if (snap.exists()) return snap.data();
 
-  const profile = {
-    uid: user.uid,
+  // Never create the student profile directly from the browser. This must use
+  // the same trusted function as registration so Firestore rules cannot split
+  // the registration and dashboard data models.
+  const registerStudent = httpsCallable(functions, "registerStudent");
+  await registerStudent({
     fullName: user.displayName || (user.email ? user.email.split("@")[0] : "Student"),
     email: user.email || "",
     phone: "",
     school: "Not provided",
-    state: "Not provided",
-    leaguePoints: 0,
-    quizzesTaken: 0,
-    averageAccuracy: 0,
-    status: "active",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
-  };
-  await setDoc(ref, profile);
+    state: "Not provided"
+  });
+
   const created = await getDoc(ref);
   if (!created.exists()) throw new Error("student-profile-create-failed");
   return created.data();
@@ -77,6 +74,13 @@ onAuthStateChanged(auth, async user => {
   try { await loadDashboard(user); }
   catch (error) {
     console.error("Dashboard load failed", error);
-    showError(error.code === "permission-denied" || error.code === "permission-denied" ? "Firebase signed you in, but Firestore rejected the student profile. Deploy the current Firestore rules before testing again." : "We couldn't load your dashboard. Please try again.");
+    const code = `${error?.code || ""} ${error?.message || ""}`;
+    if (/functions\/|unavailable|deadline|internal/i.test(code)) {
+      showError("Your account is signed in, but the student profile service is not available yet. Deploy the current Firebase Cloud Functions, then refresh this page.");
+    } else if (/permission-denied|unauthenticated/i.test(code)) {
+      showError("Your account is signed in, but Firebase rejected the student profile. Deploy the current Firestore rules and Cloud Functions, then refresh.");
+    } else {
+      showError("We couldn't load your dashboard. Please try again.");
+    }
   }
 });
