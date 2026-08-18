@@ -6,7 +6,7 @@ const $ = id => document.getElementById(id);
 const message = $("dashboardMessage");
 const content = $("dashboardContent");
 
-$("logoutButton")?.addEventListener("click", async () => { await firebaseSignOut(auth); window.location.replace("../auth.html"); });
+$("logoutButton")?.addEventListener("click", async () => { await firebaseSignOut(auth); window.location.replace("../login.html"); });
 
 function showError(text) { message.textContent = text; message.classList.add("error"); message.hidden = false; content.hidden = true; }
 
@@ -14,19 +14,8 @@ async function ensureStudentProfile(user) {
   const ref = doc(db, "students", user.uid);
   const snap = await getDoc(ref);
   if (snap.exists()) return snap.data();
-
-  // Never create the student profile directly from the browser. This must use
-  // the same trusted function as registration so Firestore rules cannot split
-  // the registration and dashboard data models.
   const registerStudent = httpsCallable(functions, "registerStudent");
-  await registerStudent({
-    fullName: user.displayName || (user.email ? user.email.split("@")[0] : "Student"),
-    email: user.email || "",
-    phone: "",
-    school: "Not provided",
-    state: "Not provided"
-  });
-
+  await registerStudent({ fullName: user.displayName || (user.email ? user.email.split("@")[0] : "Student"), school: "Not provided", state: "Not provided" });
   const created = await getDoc(ref);
   if (!created.exists()) throw new Error("student-profile-create-failed");
   return created.data();
@@ -40,8 +29,9 @@ async function loadDashboard(user) {
   $("averageScore").textContent = `${Math.round(Number(student.averageAccuracy || 0))}%`;
 
   try {
-    const leaderboardSnap = await getDoc(doc(db, "leaderboard", user.uid));
-    $("rank").textContent = leaderboardSnap.exists() && leaderboardSnap.data().rank ? `#${leaderboardSnap.data().rank}` : "—";
+    const getStudentRank = httpsCallable(functions, "getStudentRank");
+    const rank = await getStudentRank({});
+    $("rank").textContent = rank.data ? `#${rank.data}` : "—";
   } catch { $("rank").textContent = "—"; }
 
   try {
@@ -70,17 +60,13 @@ async function loadDashboard(user) {
 }
 
 onAuthStateChanged(auth, async user => {
-  if (!user) { window.location.replace("../auth.html"); return; }
+  if (!user) { window.location.replace("../login.html"); return; }
   try { await loadDashboard(user); }
   catch (error) {
     console.error("Dashboard load failed", error);
     const code = `${error?.code || ""} ${error?.message || ""}`;
-    if (/functions\/|unavailable|deadline|internal/i.test(code)) {
-      showError("Your account is signed in, but the student profile service is not available yet. Deploy the current Firebase Cloud Functions, then refresh this page.");
-    } else if (/permission-denied|unauthenticated/i.test(code)) {
-      showError("Your account is signed in, but Firebase rejected the student profile. Deploy the current Firestore rules and Cloud Functions, then refresh.");
-    } else {
-      showError("We couldn't load your dashboard. Please try again.");
-    }
+    if (/functions\/|unavailable|deadline|internal/i.test(code)) showError("Your account is signed in, but the student profile service is not available yet. Deploy the current Firebase Cloud Functions, then refresh this page.");
+    else if (/permission-denied|unauthenticated/i.test(code)) showError("Your account is signed in, but Firebase rejected the student profile. Deploy the current Firestore rules and Cloud Functions, then refresh.");
+    else showError("We couldn't load your dashboard. Please try again.");
   }
 });
