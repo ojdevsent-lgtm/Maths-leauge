@@ -7,6 +7,7 @@ import {
   limit,
   query,
   serverTimestamp,
+  setDoc,
   where
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
@@ -99,11 +100,11 @@ export async function submitDailyQuiz(answers) {
   );
   const totalQuestions = questions.length;
   const accuracy = Math.round((correct / totalQuestions) * 100);
-  const points = answers.reduce((total, answer, index) => {
-    return total + (Number(answer) === answerKey[index] ? Number(questions[index].points || 1) : 0);
-  }, 0);
+  const points = answers.reduce((total, answer, index) => (
+    total + (Number(answer) === answerKey[index] ? Number(questions[index].points || 1) : 0)
+  ), 0);
 
-  await withTimeout(import("https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js").then(({ setDoc }) => setDoc(attemptRef, {
+  await withTimeout(setDoc(attemptRef, {
     studentId: user.uid,
     quizId: quiz.id,
     answers: Object.fromEntries(answers.map((answer, index) => [String(index), Number(answer)])),
@@ -113,7 +114,7 @@ export async function submitDailyQuiz(answers) {
     leaguePointsAwarded: points,
     status: "submitted",
     submittedAt: serverTimestamp()
-  })));
+  }));
 
   return { attemptId, score: correct, totalQuestions, points, accuracy };
 }
