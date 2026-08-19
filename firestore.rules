@@ -2,29 +2,19 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() { return request.auth != null; }
-    function isAdmin() {
-      return signedIn() && exists(/databases/$(database)/documents/admin_users/$(request.auth.uid));
-    }
-    function isSelf(uid) { return signedIn() && request.auth.uid == uid; }
 
-    match /students/{uid} {
-      allow read: if isSelf(uid) || isAdmin();
-      allow create: if isSelf(uid)
-        && request.resource.data.uid == uid
-        && request.resource.data.email == request.auth.token.email
-        && request.resource.data.leaguePoints == 0
-        && request.resource.data.quizzesTaken == 0
-        && request.resource.data.averageAccuracy == 0
-        && request.resource.data.status == 'active';
-      allow update: if isAdmin() || (isSelf(uid)
-        && request.resource.data.uid == resource.data.uid
-        && request.resource.data.email == resource.data.email
-        && request.resource.data.leaguePoints is number
-        && request.resource.data.quizzesTaken is number
-        && request.resource.data.averageAccuracy is number
-        && request.resource.data.status == resource.data.status);
-      allow delete: if isAdmin();
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return signedIn() && exists(
+        /databases/$(database)/documents/admin_users/$(request.auth.uid)
+      );
     }
 
     match /users/{uid} {
@@ -36,20 +26,39 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // Student identity/profile data is writable by admins only after registration.
+    // Competition statistics are derived from attempts, not trusted from the client.
+    match /students/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow create: if isSelf(uid)
+        && request.resource.data.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.leaguePoints == 0
+        && request.resource.data.quizzesTaken == 0
+        && request.resource.data.averageAccuracy == 0
+        && request.resource.data.status == 'active';
+      allow update, delete: if isAdmin();
+    }
+
     match /quizzes/{quizId} {
       allow read: if isAdmin() || (signedIn() && resource.data.status == 'live');
       allow create, update, delete: if isAdmin();
+
       match /questions/{questionId} {
-        allow read: if isAdmin() || (signedIn()
-          && get(/databases/$(database)/documents/quizzes/$(quizId)).data.status == 'live');
+        allow read: if isAdmin() || (
+          signedIn() &&
+          get(/databases/$(database)/documents/quizzes/$(quizId)).data.status == 'live'
+        );
         allow create, update, delete: if isAdmin();
       }
     }
 
-    // One immutable attempt is allowed per student for each quiz.
-    // The deterministic document ID is {studentUid}_{quizId}.
+    // One immutable submission per student per quiz.
+    // Document ID must be {studentUid}_{quizId}.
     match /attempts/{attemptId} {
-      allow read: if isAdmin() || (signedIn() && resource.data.studentId == request.auth.uid);
+      allow read: if isAdmin() || (
+        signedIn() && resource.data.studentId == request.auth.uid
+      );
 
       allow create: if signedIn()
         && attemptId == request.auth.uid + '_' + request.resource.data.quizId
@@ -57,38 +66,42 @@ service cloud.firestore {
         && request.resource.data.studentId == request.auth.uid
         && request.resource.data.quizId is string
         && request.resource.data.answers is map
-        && request.resource.data.status == 'submitted'
         && request.resource.data.score is number
+        && request.resource.data.totalQuestions is number
         && request.resource.data.accuracy is number
         && request.resource.data.leaguePointsAwarded is number
+        && request.resource.data.status == 'submitted'
+        && request.resource.data.score >= 0
+        && request.resource.data.totalQuestions > 0
+        && request.resource.data.score <= request.resource.data.totalQuestions
+        && request.resource.data.accuracy >= 0
+        && request.resource.data.accuracy <= 100
+        && request.resource.data.leaguePointsAwarded >= 0
         && request.resource.data.keys().hasOnly([
           'studentId',
           'quizId',
           'answers',
           'score',
+          'totalQuestions',
           'accuracy',
           'leaguePointsAwarded',
           'status',
           'submittedAt'
         ]);
 
-      // Submitted attempts are immutable for students.
-      // Admins can correct/manage attempts when necessary.
       allow update, delete: if isAdmin();
     }
 
+    // Leaderboard is a serverless read model rebuilt by administrators from attempts.
     match /leaderboard/{uid} {
       allow read: if signedIn();
-      allow create, update: if isAdmin() || (isSelf(uid)
-        && request.resource.data.studentId == request.auth.uid
-        && request.resource.data.leaguePoints is number
-        && request.resource.data.quizzesTaken is number
-        && request.resource.data.averageAccuracy is number);
-      allow delete: if isAdmin();
+      allow create, update, delete: if isAdmin();
     }
 
     match /announcements/{announcementId} {
-      allow read: if signedIn() && resource.data.active == true;
+      allow read: if isAdmin() || (
+        signedIn() && resource.data.active == true
+      );
       allow create, update, delete: if isAdmin();
     }
 
@@ -99,6 +112,14 @@ service cloud.firestore {
 
     match /quizAnswerKeys/{quizId} {
       allow read, write: if isAdmin();
+    }
+
+    match /meta/{documentId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
